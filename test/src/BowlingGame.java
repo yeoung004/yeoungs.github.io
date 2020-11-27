@@ -40,7 +40,7 @@ public class BowlingGame {
 		}
 		System.out.println("\t|");
 
-		for (int i = result.length / 2; i < result.length; i++) {
+		for (int i = result.length / 2; i < result.length - 1; i++) {
 			if (result[i][0] == 10)
 				System.out.print("\t|\tX, ");
 			else if ((result[i][0] + result[i][1]) == 10) {
@@ -48,12 +48,23 @@ public class BowlingGame {
 			} else
 				System.out.print("\t|\t" + result[i][0] + ", " + result[i][1] + "");
 		}
-		if (result[9][1] == 10)
-			System.out.print("X");
-		if (score.equals("10"))
-			System.out.println(", X\t|");
+
+		if (result[9][0] + result[9][1] == 10)
+			System.out.print("\t|\t" + result[9][0] + ", /, ");
+		else if (result[9][0] + result[9][1] == 20)
+			System.out.print("\t|\tX, X, ");
+		else if (result[9][0] + result[9][1] > 10)
+			System.out.print("\t|\tX, " + result[9][1] + ", ");
 		else
-			System.out.println(", " + score + "\t|");
+			System.out.print("\t|\t" + result[9][0] + ", " + result[9][1] + ",");
+
+		// 3구 스트라이크
+		if (score.equals("10"))
+			System.out.println("X\t|");
+		if ((result[9][0] + result[9][1]) != 10 && (Integer.parseInt(score) + result[9][1]) == 10)
+			System.out.println("/\t|");
+		else
+			System.out.println(score + "\t|");
 
 		System.out.println(
 				"##################################################기록판###############################################");
@@ -79,24 +90,25 @@ public class BowlingGame {
 		Scanner input = new Scanner(System.in);
 
 		String score = "";
-		String printBonus = "";
+		String totalTemp = "";
 		String printTemp = "";
 		int[][] result = new int[10][2];
-		int[][] test = { { 5, 5 }, { 7, 1 }, { 3, 0 }, { 9, 0 }, { 1, 8 }, { 1, 9 }, { 1, 9 }, { 0, 0 },
-				{ 0, 0 }, { 0, 0 }, { 0, 5 } };
+		int[][] test = { { 10, 0 }, { 5, 3 }, { 10, 0 }, { 5, 3 }, { 10, 0 }, { 5, 3 }, { 10, 0 }, { 5, 3 }, { 10, 0 },
+				{ 5, 3 }, { 0, 0 } };
 
 		int ballCnt = 0;
 		int ball = 1;
 		int pin = 10;
 		int frame = 1;
 		int total = 0;
-		int strikeCnt = 0;
+		int strikeCnt = 2;
 		int nScore = 0;
+		int strikeFrame = 0;
 
 		boolean isSpare = false;
 		boolean isStrike = false;
-		boolean isSpareNext = false;
-		boolean isStrikeNext = false;
+		boolean isDouble = false;
+		boolean isTurkey = false;
 
 		System.out.println("-------------------프로그램을 시작합니다-------------------");
 		for (frame = 1; frame <= 9; frame++) {
@@ -109,9 +121,9 @@ public class BowlingGame {
 				// TODO
 				System.out.print("> " + ballCnt + " 번째 입력 값 ");
 				// score = input.nextLine();
-//				 score = random.nextInt(pin) + "";
-//				score = 5 + "";
-				 score = test[frame - 1][ball - 1] + "";
+				// score = random.nextInt(pin+1) + "";
+				// score = 5 + "";
+				score = test[frame - 1][ball - 1] + "";
 
 				if (score.equals("")) {
 					System.out.print("정말 종료하시겠습니까? y/n : ");
@@ -139,33 +151,53 @@ public class BowlingGame {
 				if (isSpare) {
 					total += nScore;
 					isSpare = false;
-					isSpareNext = true;
 				}
 
-				if (ball == 1 && pin == 0) {
-					isStrike = true;
-					result[frame - 1][1] = 0;
-				} else if (ball == 2 && pin == 0) {
-					isSpare = true;
+				if (isDouble && ball == 1 && pin == 0) {
+					total += 30;
+					isDouble = false;
+					isTurkey = true;
+				} else if (isStrike && ball == 1 && pin == 0) {
+					total += 10;
+					isStrike = false;
+					isDouble = true;
+				} else if (isStrike) {
+					total += nScore;
 				}
 
 				total += nScore;
-				
-				if (isSpare) {
-					System.out.println("출력 = " + score + "[" + frame + ", " + ball + ", " + total + "+" + "]");
-					printTemp = total + "+";
-				} else if (isSpareNext) {
-					System.out.println("출력 = " + score + "[" + frame + ", " + ball + ", " + printTemp + score + "]");
-					isSpareNext = false;
-				} else
-					System.out.println("출력 = " + score + "[" + frame + ", " + ball + ", " + total + "]");
+
+				if (ball == 1 && pin == 0) {
+					totalTemp = total + "";
+					isStrike = true;
+					result[frame - 1][1] = 0;
+					strikeFrame = frame;
+				} else if (ball == 2 && pin == 0) {
+					isSpare = true;
+				} else {
+					isTurkey = false;
+				}
 
 				if (isStrike) {
+					printTemp = "출력 = " + score + "[" + frame + ", " + ball + ", " + totalTemp + "+";
+					if(strikeFrame != frame){
+						isStrike = false;
+						printTemp+=score + "+";
+					}
+					printTemp += "]";
+				} else if (isSpare) {
+					printTemp = "출력 = " + score + "[" + frame + ", " + ball + ", " + total + "+" + "]";
+				} else {
+					printTemp = "출력 = " + score + "[" + frame + ", " + ball + ", " + total + "]";
+				}
+
+				System.out.println(printTemp);
+
+				if (pin == 0 || ball == 2) {
 					pin = 10;
 					break;
 				}
 			}
-			pin = 10;
 		}
 		// 10번 프레임
 		if (!score.equals("y")) {
@@ -179,7 +211,9 @@ public class BowlingGame {
 				ballCnt++;
 
 				System.out.print("> " + ballCnt + " 번째 입력 값 ");
-				// score = input.nextLine();
+				score = input.nextLine();
+
+				// score = 0+"";
 
 				if (score.equals("")) {
 					System.out.print("정말 종료하시겠습니까? y/n : ");
@@ -201,29 +235,31 @@ public class BowlingGame {
 				nScore = Integer.parseInt(score);
 				// 쓰러트린 핀의 개수 구하기
 				pin -= nScore;
-				
-				//9프레임이 스페어이면
+
+				total += nScore;
+
+				if (ball != 3)
+					result[frame - 1][ball - 1] = nScore;
+
 				if (isSpare) {
 					total += nScore;
 					isSpare = false;
-					isSpareNext = true;
+				} else if (isStrike) {
+					total += nScore;
+					if (ball == 2)
+						isStrike = false;
+				} else if (isStrike && ball == 1 && pin == 0) {
+					total += 10;
+					isStrike = false;
+					isDouble = true;
+				} else if (isDouble && ball == 2 && pin == 0) {
+					total += 10;
+					isDouble = false;
 				}
-				
-				total += nScore;
-				
-				if (ball != 3)
-					result[frame - 1][ball - 1] = nScore;
-				
-				
-				
-				
-				if (isSpareNext) {
-					System.out.println("출력 = " + score + "[" + frame + ", " + ball + ", " + printTemp + score + "]");
-					isSpareNext = false;
-				}else
-					System.out.println("출력 = " + score + "[" + frame + ", " + ball + ", " + total + "]");
-				
-				if (ball == 2 && pin != 0)
+
+				System.out.println("출력 = " + score + "[" + frame + ", " + ball + ", " + total + "]");
+
+				if (result[9][0] != 10 && (ball == 2 && pin != 0))
 					break;
 			}
 			bowlingGame.show(result, score);
