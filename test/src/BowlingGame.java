@@ -1,6 +1,5 @@
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 import java.util.Scanner;
 
 public class BowlingGame {
@@ -71,7 +70,7 @@ public class BowlingGame {
 		// 3구 스트라이크
 		if (score.equals("10"))
 			System.out.println("X\t|");
-		if ((result[9][0] + result[9][1]) != 10 && (Integer.parseInt(score) + result[9][1]) == 10)
+		else if ((result[9][0] + result[9][1]) != 10 && (Integer.parseInt(score) + result[9][1]) == 10)
 			System.out.println("/\t|");
 		else
 			System.out.println(score + "\t|");
@@ -110,7 +109,6 @@ public class BowlingGame {
 		int frame = 1;
 		int total = 0;
 		int nScore = 0;
-		int strikeFrame = 0;
 
 		Map<String, Boolean> nowStatus = new HashMap<String, Boolean>();
 
@@ -128,7 +126,7 @@ public class BowlingGame {
 				// 몇 번째 투구
 				ballCnt++;
 				System.out.print("> " + ballCnt + " 번째 입력 값 ");
-				 score = input.nextLine();
+				score = input.nextLine();
 
 				if (score.equals("")) {
 					System.out.print("정말 종료하시겠습니까? y/n : ");
@@ -155,11 +153,15 @@ public class BowlingGame {
 
 				total += nScore;
 
-				if ((nowStatus.get("isSpare") || nowStatus.get("isStrike")) && ball == 1) {
+				if (nowStatus.get("isSpare") && ball == 1) {
 					total += nScore;
-				}else if ((nowStatus.get("isTurkey") || nowStatus.get("isDouble")) && ball == 1){
-					total += nScore*2;
-				}if ((nowStatus.get("isStrike") || nowStatus.get("isTurkey") || nowStatus.get("isDouble"))
+					nowStatus = bowlingGame.updateStatus(nowStatus, "");
+				} else if (nowStatus.get("isStrike") && ball == 1) {
+					total += nScore;
+				} else if ((nowStatus.get("isTurkey") || nowStatus.get("isDouble")) && ball == 1) {
+					total += nScore * 2;
+				}
+				if ((nowStatus.get("isStrike") || nowStatus.get("isTurkey") || nowStatus.get("isDouble"))
 						&& ball == 2) {
 					total += nScore;
 					nowStatus = bowlingGame.updateStatus(nowStatus, "");
@@ -212,11 +214,7 @@ public class BowlingGame {
 				ballCnt++;
 
 				System.out.print("> " + ballCnt + " 번째 입력 값 ");
-				 score = input.nextLine();
-//				if (ball != 3)
-//					score = test[frame - 1][ball - 1] + "";
-//				else
-//					score = "10";
+				score = input.nextLine();
 
 				if (score.equals("")) {
 					System.out.print("정말 종료하시겠습니까? y/n : ");
@@ -256,7 +254,7 @@ public class BowlingGame {
 							printTemp += total;
 						} else {
 							total += nScore;
-							totalTemp = total + "+10+"+score+"+";
+							totalTemp = total + "+10+" + score + "+";
 							printTemp += totalTemp;
 						}
 					} else if (nowStatus.get("isDouble")) {
