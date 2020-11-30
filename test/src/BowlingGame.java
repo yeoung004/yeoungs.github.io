@@ -163,7 +163,7 @@ public class BowlingGame {
 					isDouble = true;
 				} else if (isStrike) {
 					total += nScore;
-				}
+				} 
 
 				total += nScore;
 
