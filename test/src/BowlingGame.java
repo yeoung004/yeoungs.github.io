@@ -3,15 +3,224 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class BowlingGame {
-	public Map<String, Boolean> updateStatus(Map<String, Boolean> nowStatus, String update) {
+	final static int EMPTY_PIN = 0;
+	final static int FIRST_BALL = 1;
+	final static int SECOND_BALL = 2;
+	final static int FINAL_BALL = 3;
+	final static int FULL_PIN = 10;
+
+	public static void main(String[] args) {
+		Scanner roll = new Scanner(System.in);
+
+		String score = "";
+		String totalTemp = "";
+		String printTemp = "";
+		int[][] result = { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 },
+				{ 0, 0 } };
+
+		int ballCnt = 0;
+		int ball = 1;
+		int pin = 10;
+		int frame = 1;
+		int total = 0;
+		int nScore = 0;
+
+		Map<String, Boolean> nowStatus = new HashMap<String, Boolean>();
+
+		nowStatus.put("isTurkey", false);
+		nowStatus.put("isStrike", false);
+		nowStatus.put("isSpare", false);
+		nowStatus.put("isDouble", false);
+
+		System.out.println("-------------------프로그램을 시작합니다-------------------");
+		
+		for (frame = 1; frame <= 9; frame++) {
+			if (score.equals("y"))
+				break;
+			for (ball = FIRST_BALL; ball <= SECOND_BALL; ball++) {
+
+				// 몇 번째 투구
+				ballCnt++;
+				System.out.print("> " + ballCnt + " 번째 입력 값 ");
+				score = roll.nextLine();
+
+				if (score.equals("")) {
+					System.out.print("정말 종료하시겠습니까? y/n : ");
+					score = roll.nextLine();
+
+					if (score.equals("y")) {
+						break;
+					}
+					System.out.println("다시 시작합니다...");
+					ballCnt--;
+					frame--;
+					continue;
+				}
+
+				else if (!isCorrect(score, pin)) {
+					ballCnt--;
+					ball--;
+					continue;
+				}
+
+				nScore = Integer.parseInt(score);
+				pin -= nScore;
+				result[frame - 1][ball - 1] = nScore;
+				total += nScore;
+				printTemp = "출력 = " + score + "[" + frame + ", " + ball + ", ";
+
+				if (ball == FIRST_BALL) {
+					if (nowStatus.get("isSpare")) {
+						total += nScore;
+						nowStatus = updateStatus(nowStatus, "");
+					} else if (nowStatus.get("isStrike")) {
+						total += nScore;
+					} else if ((nowStatus.get("isTurkey") || nowStatus.get("isDouble"))) {
+						total += nScore * 2;
+					}
+				} else {
+					if (nowStatus.get("isStrike") || nowStatus.get("isTurkey") || nowStatus.get("isDouble")) {
+						total += nScore;
+						nowStatus = updateStatus(nowStatus, "");
+					}
+				}
+
+				if (pin == EMPTY_PIN) {
+					if (ball == FIRST_BALL) {
+						if (nowStatus.get("isTurkey")) {
+							totalTemp = total + "+10+10+";
+							nowStatus = updateStatus(nowStatus, "isTurkey");
+						} else if (nowStatus.get("isDouble")) {
+							totalTemp += "10+";
+							nowStatus = updateStatus(nowStatus, "isTurkey");
+						} else if (nowStatus.get("isStrike")) {
+							totalTemp += "10+";
+							nowStatus = updateStatus(nowStatus, "isDouble");
+						} else {
+							totalTemp = total + "+";
+							nowStatus = updateStatus(nowStatus, "isStrike");
+						}
+						printTemp += totalTemp;
+					} else if (ball == SECOND_BALL) {
+						nowStatus = updateStatus(nowStatus, "isSpare");
+						printTemp += total + "+";
+					}
+				} else {
+					if ((nowStatus.get("isTurkey") || nowStatus.get("isStrike") || nowStatus.get("isDouble"))
+							&& ball == FIRST_BALL) {
+						printTemp += totalTemp + score + "+";
+					} else
+						printTemp += total;
+				}
+
+				nowScore(printTemp);
+
+				if (pin == EMPTY_PIN || ball == SECOND_BALL) {
+					pin = FULL_PIN;
+					break;
+				}
+			}
+		}
+		// 10번 프레임
+		if (!score.equals("y")) {
+			for (ball = FIRST_BALL; ball <= FINAL_BALL; ball++) {
+				if (pin == EMPTY_PIN)
+					pin = FULL_PIN;
+				if (score.equals("y"))
+					break;
+
+				// 몇 번째 투구
+				ballCnt++;
+
+				System.out.print("> " + ballCnt + " 번째 입력 값 ");
+				score = roll.nextLine();
+
+				if (score.equals("")) {
+					System.out.print("정말 종료하시겠습니까? y/n : ");
+					score = roll.nextLine();
+
+					if (score.equals("y")) {
+						break;
+					}
+					System.out.println("다시 시작합니다...");
+					ballCnt--;
+					frame--;
+					continue;
+				} else if (!isCorrect(score, pin)) {
+					ballCnt--;
+					ball--;
+					continue;
+				}
+
+				nScore = Integer.parseInt(score);
+				pin -= nScore;
+				total += nScore;
+
+				printTemp = "출력 = " + score + "[" + frame + ", " + ball + ", ";
+				if (ball != FINAL_BALL) {
+					result[frame - 1][ball - 1] = nScore;
+
+					if (nowStatus.get("isSpare")) {
+						total += nScore;
+						nowStatus = updateStatus(nowStatus, "");
+						printTemp += total;
+					} else if (nowStatus.get("isTurkey")) {
+						total += nScore;
+						if (ball == SECOND_BALL) {
+							nowStatus = updateStatus(nowStatus, "");
+							printTemp += total;
+						} else {
+							total += nScore;
+							totalTemp = total + "+10+" + score + "+";
+							printTemp += totalTemp;
+						}
+					} else if (nowStatus.get("isDouble")) {
+						total += nScore;
+						if (ball == SECOND_BALL) {
+							nowStatus = updateStatus(nowStatus, "");
+							printTemp += total;
+						} else {
+							total += nScore;
+							totalTemp += score + "+";
+							printTemp += totalTemp;
+						}
+					} else if (nowStatus.get("isStrike")) {
+						total += nScore;
+						if (ball == SECOND_BALL) {
+							nowStatus = updateStatus(nowStatus, "");
+							printTemp += total;
+						} else {
+							totalTemp += score + "+";
+							printTemp += totalTemp;
+						}
+					} else
+						printTemp += total;
+				} else
+					printTemp += total;
+				nowScore(printTemp);
+
+				if (result[9][0] != FULL_PIN && (ball == SECOND_BALL && pin != EMPTY_PIN))
+					break;
+			}
+			show(result, score);
+			System.out.println("최종점수 :" + total);
+		}
+
+		System.out.println("-------------------프로그램을 종료합니다-------------------");
+
+	}
+
+	private static void nowScore(String printTemp) {
+		System.out.println(printTemp + "]");
+	}
+	private static Map<String, Boolean> updateStatus(Map<String, Boolean> nowStatus, String update) {
 		nowStatus.replaceAll((key, value) -> value = false);
 		if (update != "")
 			nowStatus.replace(update, true);
 		return nowStatus;
 
 	}
-
-	public boolean isNumber(String input) {
+	private static boolean isNumber(String input) {
 		char temp = ' ';
 
 		for (int i = 0; i < input.length(); i++) {
@@ -23,8 +232,7 @@ public class BowlingGame {
 		}
 		return false;
 	}
-
-	public void show(int[][] result, String score) {
+	private static void show(int[][] result, String score) {
 		System.out.println(
 				"##################################################기록판###############################################");
 		for (int i = 1; i <= result.length / 2; i++) {
@@ -78,11 +286,10 @@ public class BowlingGame {
 		System.out.println(
 				"##################################################기록판###############################################");
 	}
-
-	public boolean isCorrect(String score, int pin) {
+	private static boolean isCorrect(String score, int pin) {
 		BowlingGame bowlingGame = new BowlingGame();
 
-		if (!bowlingGame.isNumber(score)) {
+		if (!isNumber(score)) {
 			System.out.println("숫자값만 입력해주세요!!!");
 			return false;
 		} else if (Integer.parseInt(score) < 0 || Integer.parseInt(score) > pin) {
@@ -91,206 +298,6 @@ public class BowlingGame {
 		}
 
 		return true;
-	}
-
-	public static void main(String[] args) {
-		BowlingGame bowlingGame = new BowlingGame();
-		Scanner input = new Scanner(System.in);
-
-		String score = "10";
-		String totalTemp = "";
-		String printTemp = "";
-		int[][] result = { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 },
-				{ 0, 0 } };
-
-		int ballCnt = 0;
-		int ball = 1;
-		int pin = 10;
-		int frame = 1;
-		int total = 0;
-		int nScore = 0;
-
-		Map<String, Boolean> nowStatus = new HashMap<String, Boolean>();
-
-		nowStatus.put("isTurkey", false);
-		nowStatus.put("isStrike", false);
-		nowStatus.put("isSpare", false);
-		nowStatus.put("isDouble", false);
-
-		System.out.println("-------------------프로그램을 시작합니다-------------------");
-		for (frame = 1; frame <= 9; frame++) {
-			if (score.equals("y"))
-				break;
-			for (ball = 1; ball <= 2; ball++) {
-
-				// 몇 번째 투구
-				ballCnt++;
-				System.out.print("> " + ballCnt + " 번째 입력 값 ");
-				score = input.nextLine();
-
-				if (score.equals("")) {
-					System.out.print("정말 종료하시겠습니까? y/n : ");
-					score = input.nextLine();
-
-					if (score.equals("y")) {
-						break;
-					}
-					System.out.println("다시 시작합니다...");
-					ballCnt--;
-					frame--;
-					continue;
-				}
-
-				else if (!bowlingGame.isCorrect(score, pin)) {
-					ballCnt--;
-					ball--;
-					continue;
-				}
-
-				nScore = Integer.parseInt(score);
-				pin -= nScore;
-				result[frame - 1][ball - 1] = nScore;
-
-				total += nScore;
-
-				if (nowStatus.get("isSpare") && ball == 1) {
-					total += nScore;
-					nowStatus = bowlingGame.updateStatus(nowStatus, "");
-				} else if (nowStatus.get("isStrike") && ball == 1) {
-					total += nScore;
-				} else if ((nowStatus.get("isTurkey") || nowStatus.get("isDouble")) && ball == 1) {
-					total += nScore * 2;
-				}
-				if ((nowStatus.get("isStrike") || nowStatus.get("isTurkey") || nowStatus.get("isDouble"))
-						&& ball == 2) {
-					total += nScore;
-					nowStatus = bowlingGame.updateStatus(nowStatus, "");
-				}
-				printTemp = "출력 = " + score + "[" + frame + ", " + ball + ", ";
-				if (nowStatus.get("isTurkey") && ball == 1 && pin == 0) {
-					totalTemp = total + "+10+10+";
-					printTemp += totalTemp;
-					nowStatus = bowlingGame.updateStatus(nowStatus, "isTurkey");
-				} else if (nowStatus.get("isDouble") && ball == 1 && pin == 0) {
-					totalTemp += "10+";
-					printTemp += totalTemp;
-					nowStatus = bowlingGame.updateStatus(nowStatus, "isTurkey");
-				} else if (nowStatus.get("isStrike") && ball == 1 && pin == 0) {
-					totalTemp += "10+";
-					printTemp += totalTemp;
-					nowStatus = bowlingGame.updateStatus(nowStatus, "isDouble");
-				} else if (ball == 1 && pin == 0) {
-					totalTemp = total + "+";
-					printTemp += totalTemp;
-					nowStatus = bowlingGame.updateStatus(nowStatus, "isStrike");
-				} else if (ball == 2 && pin == 0) {
-					nowStatus = bowlingGame.updateStatus(nowStatus, "isSpare");
-					printTemp += total + "+";
-				} else {
-					if ((nowStatus.get("isTurkey") || nowStatus.get("isStrike") || nowStatus.get("isDouble"))
-							&& ball == 1) {
-						printTemp += totalTemp + score + "+";
-					} else
-						printTemp += total;
-				}
-
-				System.out.println(printTemp + "]");
-
-				if (pin == 0 || ball == 2) {
-					pin = 10;
-					break;
-				}
-			}
-		}
-		// 10번 프레임
-		if (!score.equals("y")) {
-			for (ball = 1; ball <= 3; ball++) {
-				if (pin == 0 || ball == 3)
-					pin = 10;
-				if (score.equals("y"))
-					break;
-
-				// 몇 번째 투구
-				ballCnt++;
-
-				System.out.print("> " + ballCnt + " 번째 입력 값 ");
-				score = input.nextLine();
-
-				if (score.equals("")) {
-					System.out.print("정말 종료하시겠습니까? y/n : ");
-					score = input.nextLine();
-
-					if (score.equals("y")) {
-						break;
-					}
-					System.out.println("다시 시작합니다...");
-					ballCnt--;
-					frame--;
-					continue;
-				} else if (!bowlingGame.isCorrect(score, pin)) {
-					ballCnt--;
-					ball--;
-					continue;
-				}
-
-				nScore = Integer.parseInt(score);
-				// 쓰러트린 핀의 개수 구하기
-				pin -= nScore;
-
-				total += nScore;
-
-				printTemp = "출력 = " + score + "[" + frame + ", " + ball + ", ";
-				if (ball != 3) {
-					result[frame - 1][ball - 1] = nScore;
-
-					if (nowStatus.get("isSpare")) {
-						total += nScore;
-						nowStatus = bowlingGame.updateStatus(nowStatus, "");
-						printTemp += total;
-					} else if (nowStatus.get("isTurkey")) {
-						total += nScore;
-						if (ball == 2) {
-							nowStatus = bowlingGame.updateStatus(nowStatus, "");
-							printTemp += total;
-						} else {
-							total += nScore;
-							totalTemp = total + "+10+" + score + "+";
-							printTemp += totalTemp;
-						}
-					} else if (nowStatus.get("isDouble")) {
-						total += nScore;
-						if (ball == 2) {
-							nowStatus = bowlingGame.updateStatus(nowStatus, "");
-							printTemp += total;
-						} else {
-							total += nScore;
-							totalTemp += score + "+";
-							printTemp += totalTemp;
-						}
-					} else if (nowStatus.get("isStrike")) {
-						total += nScore;
-						if (ball == 2) {
-							nowStatus = bowlingGame.updateStatus(nowStatus, "");
-							printTemp += total;
-						} else {
-							totalTemp += score + "+";
-							printTemp += totalTemp;
-						}
-					} else
-						printTemp += total;
-				} else
-					printTemp += total;
-				System.out.println(printTemp + "]");
-
-				if (result[9][0] != 10 && (ball == 2 && pin != 0))
-					break;
-			}
-			bowlingGame.show(result, score);
-			System.out.println("최종점수 :" + total);
-		}
-
-		System.out.println("-------------------프로그램을 종료합니다-------------------");
-
 	}
 
 }
