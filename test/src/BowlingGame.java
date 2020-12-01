@@ -33,7 +33,7 @@ public class BowlingGame {
 		nowStatus.put("isDouble", false);
 
 		System.out.println("-------------------프로그램을 시작합니다-------------------");
-		
+
 		for (frame = 1; frame <= 9; frame++) {
 			if (score.equals("y"))
 				break;
@@ -79,7 +79,7 @@ public class BowlingGame {
 						total += nScore * 2;
 					}
 				} else {
-					if (nowStatus.get("isStrike") || nowStatus.get("isTurkey") || nowStatus.get("isDouble")) {
+					if (isOneOfStrikeTurkeyDouble(nowStatus)) {
 						total += nScore;
 						nowStatus = updateStatus(nowStatus, "");
 					}
@@ -106,8 +106,7 @@ public class BowlingGame {
 						printTemp += total + "+";
 					}
 				} else {
-					if ((nowStatus.get("isTurkey") || nowStatus.get("isStrike") || nowStatus.get("isDouble"))
-							&& ball == FIRST_BALL) {
+					if (isOneOfStrikeTurkeyDouble(nowStatus) && ball == FIRST_BALL) {
 						printTemp += totalTemp + score + "+";
 					} else
 						printTemp += total;
@@ -155,48 +154,37 @@ public class BowlingGame {
 				nScore = Integer.parseInt(score);
 				pin -= nScore;
 				total += nScore;
-
 				printTemp = "출력 = " + score + "[" + frame + ", " + ball + ", ";
+				
+				
 				if (ball != FINAL_BALL) {
 					result[frame - 1][ball - 1] = nScore;
 
 					if (nowStatus.get("isSpare")) {
 						total += nScore;
 						nowStatus = updateStatus(nowStatus, "");
-						printTemp += total;
-					} else if (nowStatus.get("isTurkey")) {
-						total += nScore;
+					} else if (isOneOfStrikeTurkeyDouble(nowStatus)) {
 						if (ball == SECOND_BALL) {
-							nowStatus = updateStatus(nowStatus, "");
-							printTemp += total;
-						} else {
 							total += nScore;
-							totalTemp = total + "+10+" + score + "+";
-							printTemp += totalTemp;
-						}
-					} else if (nowStatus.get("isDouble")) {
-						total += nScore;
-						if (ball == SECOND_BALL) {
 							nowStatus = updateStatus(nowStatus, "");
-							printTemp += total;
 						} else {
-							total += nScore;
-							totalTemp += score + "+";
-							printTemp += totalTemp;
+							if (nowStatus.get("isStrike"))
+								total += nScore;
+							else
+								total += nScore * 2;
+							if (nowStatus.get("isTurkey"))
+								totalTemp = total + "+10+" + score + "+";
+							else
+								totalTemp += score + "+";
 						}
-					} else if (nowStatus.get("isStrike")) {
-						total += nScore;
-						if (ball == SECOND_BALL) {
-							nowStatus = updateStatus(nowStatus, "");
-							printTemp += total;
-						} else {
-							totalTemp += score + "+";
-							printTemp += totalTemp;
-						}
-					} else
-						printTemp += total;
-				} else
+					}
+				}
+
+				if (isOneOfStrikeTurkeyDouble(nowStatus))
+					printTemp += totalTemp;
+				else
 					printTemp += total;
+
 				nowScore(printTemp);
 
 				if (result[9][0] != FULL_PIN && (ball == SECOND_BALL && pin != EMPTY_PIN))
@@ -210,9 +198,14 @@ public class BowlingGame {
 
 	}
 
+	private static boolean isOneOfStrikeTurkeyDouble(Map<String, Boolean> nowStatus) {
+		return nowStatus.get("isStrike") || nowStatus.get("isTurkey") || nowStatus.get("isDouble");
+	}
+
 	private static void nowScore(String printTemp) {
 		System.out.println(printTemp + "]");
 	}
+
 	private static Map<String, Boolean> updateStatus(Map<String, Boolean> nowStatus, String update) {
 		nowStatus.replaceAll((key, value) -> value = false);
 		if (update != "")
@@ -220,6 +213,7 @@ public class BowlingGame {
 		return nowStatus;
 
 	}
+
 	private static boolean isNumber(String input) {
 		char temp = ' ';
 
@@ -232,6 +226,7 @@ public class BowlingGame {
 		}
 		return false;
 	}
+
 	private static void show(int[][] result, String score) {
 		System.out.println(
 				"##################################################기록판###############################################");
@@ -286,6 +281,7 @@ public class BowlingGame {
 		System.out.println(
 				"##################################################기록판###############################################");
 	}
+
 	private static boolean isCorrect(String score, int pin) {
 		BowlingGame bowlingGame = new BowlingGame();
 
