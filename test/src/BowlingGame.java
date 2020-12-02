@@ -56,7 +56,7 @@ public class BowlingGame {
 					}
 					System.out.println("다시 시작합니다...");
 					ballCnt--;
-					frame--;
+					ball--;
 					continue;
 				}
 
