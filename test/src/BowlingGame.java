@@ -244,7 +244,7 @@ public class BowlingGame {
 		else if (result[9][0] + result[9][1] > 10)
 			System.out.print("\t|\tX, " + result[9][1] + ", ");
 		else
-			System.out.println("\t|\t" + result[9][0] + ", " + result[9][1] + ", 0");
+			System.out.println("\t|\t" + result[9][0] + ", " + result[9][1] + ", 0|");
 
 		if (result[9][0] + result[9][1] >= 10) {
 			if (score.equals("10"))
