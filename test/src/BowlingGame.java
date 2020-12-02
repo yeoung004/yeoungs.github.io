@@ -42,7 +42,6 @@ public class BowlingGame {
 				break;
 			for (ball = FIRST_BALL; ball <= SECOND_BALL; ball++) {
 
-				// 몇 번째 투구
 				ballCnt++;
 				System.out.print("> " + ballCnt + " 번째 입력 값 ");
 				score = roll.nextLine();
@@ -68,11 +67,12 @@ public class BowlingGame {
 
 				nScore = Integer.parseInt(score);
 				pin -= nScore;
-				result[frame - 1][ball - 1] = nScore;
 				total += nScore;
 				printTemp = "출력 = " + score + "[" + frame + ", " + ball + ", ";
+				if (!lastBall)
+					result[frame - 1][ball - 1] = nScore;
 
-				if (frame < 10) {
+				if (frame < LAST_FRAME) {
 					if (ball == FIRST_BALL) {
 						if (nowStatus.get("isSpare")) {
 							total += nScore;
@@ -115,11 +115,9 @@ public class BowlingGame {
 						} else
 							printTemp += total;
 					}
-					
+
 				} else if (frame == LAST_FRAME) {
 					if (!lastBall) {
-						result[frame - 1][ball - 1] = nScore;
-
 						if (nowStatus.get("isSpare")) {
 							total += nScore;
 							nowStatus = updateStatus(nowStatus, "");
@@ -262,7 +260,6 @@ public class BowlingGame {
 	}
 
 	private static boolean isCorrect(String score, int pin) {
-		BowlingGame bowlingGame = new BowlingGame();
 
 		if (!isNumber(score)) {
 			System.out.println("숫자값만 입력해주세요!!!");
