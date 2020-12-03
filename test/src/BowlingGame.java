@@ -1,4 +1,3 @@
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -13,152 +12,133 @@ public class BowlingGame {
 
 	public static void main(String[] args) {
 		Scanner roll = new Scanner(System.in);
-
-		String score = "";
-		String totalTemp = "";
-		String printTemp = "";
-		int[][] result = { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 },
-				{ 0, 0 } };
-
-		int ballCnt = 0;
-		int ball = 1;
-		int pin = 10;
-		int frame = 1;
-		int total = 0;
-		int nScore = 0;
-		boolean lastBall = false;
-
-		Map<String, Boolean> nowStatus = new HashMap<String, Boolean>();
-
-		nowStatus.put("isTurkey", false);
-		nowStatus.put("isStrike", false);
-		nowStatus.put("isSpare", false);
-		nowStatus.put("isDouble", false);
+		BowlingDTO dto = new BowlingDTO();
 
 		System.out.println("-------------------프로그램을 시작합니다-------------------");
 
-		for (frame = FIRST_FRAME; frame <= LAST_FRAME; frame++) {
-			if (score.equals("y"))
+		for (dto.setFrame(FIRST_FRAME); dto.getFrame() <= LAST_FRAME; dto.setFrame(dto.getFrame() + 1)) {
+			if (dto.getScore().equals("y"))
 				break;
-			for (ball = FIRST_BALL; ball <= SECOND_BALL; ball++) {
+			for (dto.setBall(FIRST_BALL); dto.getBall() <= SECOND_BALL; dto.setBall(dto.getBall() + 1)) {
 
-				ballCnt++;
-				System.out.print("> " + ballCnt + " 번째 입력 값 ");
-				score = roll.nextLine();
+				dto.setBallCnt(dto.getBallCnt() + 1);
+				System.out.print("> " + dto.getBallCnt() + " 번째 입력 값 ");
+				dto.setScore(roll.nextLine());
 
-				if (score.equals("")) {
+				if (dto.getScore().equals("")) {
 					System.out.print("정말 종료하시겠습니까? y/n : ");
-					score = roll.nextLine();
+					dto.setScore(roll.nextLine());
 
-					if (score.equals("y")) {
+					if (dto.getScore().equals("y")) {
 						break;
 					}
 					System.out.println("다시 시작합니다...");
-					ballCnt--;
-					ball--;
+					dto.setBallCnt(dto.getBallCnt() - 1);
+					dto.setBall(dto.getBall() - 1);
 					continue;
 				}
 
-				else if (!isCorrect(score, pin)) {
-					ballCnt--;
-					ball--;
+				else if (!isCorrect(dto.getScore(), dto.getPin())) {
+					dto.setBallCnt(dto.getBallCnt() - 1);
+					dto.setBall(dto.getBall() - 1);
 					continue;
 				}
 
-				nScore = Integer.parseInt(score);
-				pin -= nScore;
-				total += nScore;
-				printTemp = "출력 = " + score + "[" + frame + ", " + ball + ", ";
-				if (!lastBall)
-					result[frame - 1][ball - 1] = nScore;
+				dto.setnScore(Integer.parseInt(dto.getScore()));
+				dto.setPin(dto.getPin() - dto.getnScore());
+				dto.setTotal(dto.getTotal() + dto.getnScore());
 
-				if (frame < LAST_FRAME) {
-					if (ball == FIRST_BALL) {
-						if (nowStatus.get("isSpare")) {
-							total += nScore;
-							nowStatus = updateStatus(nowStatus, "");
-						} else if (nowStatus.get("isStrike")) {
-							total += nScore;
-						} else if ((nowStatus.get("isTurkey") || nowStatus.get("isDouble"))) {
-							total += nScore * 2;
+				dto.setPrintTemp("출력 = " + dto.getScore() + "[" + dto.getFrame() + ", " + dto.getBall() + ", ");
+				if (!dto.isLastBall())
+					dto.setResult(dto.getFrame() - 1, dto.getBall() - 1, dto.getnScore());
+
+				if (dto.getFrame() < LAST_FRAME) {
+					if (dto.getBall() == FIRST_BALL) {
+						if (dto.getNowStatus("Spare")) {
+							dto.setTotal(dto.getTotal() + dto.getnScore());
+							dto.setNowStatus("");
+						} else if (dto.getNowStatus("Strike")) {
+							dto.setTotal(dto.getTotal() + dto.getnScore());
+						} else if ((dto.getNowStatus("Turkey") || dto.getNowStatus("Double"))) {
+							dto.setTotal(dto.getTotal() + dto.getnScore() * 2);
 						}
 					} else {
-						if (isOneOfStrikeTurkeyDouble(nowStatus)) {
-							total += nScore;
-							nowStatus = updateStatus(nowStatus, "");
+						if (isOneOfStrikeTurkeyDouble(dto)) {
+							dto.setTotal(dto.getTotal() + dto.getnScore());
+							dto.setNowStatus("");
 						}
 					}
 
-					if (pin == EMPTY_PIN) {
-						if (ball == FIRST_BALL) {
-							if (nowStatus.get("isTurkey")) {
-								totalTemp = total + "+10+10+";
-								nowStatus = updateStatus(nowStatus, "isTurkey");
-							} else if (nowStatus.get("isDouble")) {
-								totalTemp += "10+";
-								nowStatus = updateStatus(nowStatus, "isTurkey");
-							} else if (nowStatus.get("isStrike")) {
-								totalTemp += "10+";
-								nowStatus = updateStatus(nowStatus, "isDouble");
+					if (dto.getPin() == EMPTY_PIN) {
+						if (dto.getBall() == FIRST_BALL) {
+							if (dto.getNowStatus("Turkey")) {
+								dto.setTotalTemp(dto.getTotal() + "+10+10+");
+								dto.setNowStatus("Turkey");
+							} else if (dto.getNowStatus("Double")) {
+								dto.setTotalTemp(dto.getTotalTemp() + "10+");
+								dto.setNowStatus("Turkey");
+							} else if (dto.getNowStatus("Strike")) {
+								dto.setTotalTemp(dto.getTotalTemp() + "10+");
+								dto.setNowStatus("Double");
 							} else {
-								totalTemp = total + "+";
-								nowStatus = updateStatus(nowStatus, "isStrike");
+								dto.setTotalTemp(dto.getTotal() + "+");
+								dto.setNowStatus("Strike");
 							}
-							printTemp += totalTemp;
-						} else if (ball == SECOND_BALL) {
-							nowStatus = updateStatus(nowStatus, "isSpare");
-							printTemp += total + "+";
+							dto.setPrintTemp(dto.getPrintTemp() + dto.getTotalTemp());
+						} else if (dto.getBall() == SECOND_BALL) {
+							dto.setNowStatus("Spare");
+							dto.setPrintTemp(dto.getPrintTemp() + dto.getTotal() + "+");
 						}
 					} else {
-						if (isOneOfStrikeTurkeyDouble(nowStatus) && ball == FIRST_BALL) {
-							printTemp += totalTemp + score + "+";
+						if (isOneOfStrikeTurkeyDouble(dto) && dto.getBall() == FIRST_BALL) {
+							dto.setPrintTemp(dto.getPrintTemp() + dto.getTotal() + "+");
 						} else
-							printTemp += total;
+							dto.setPrintTemp(dto.getPrintTemp() + dto.getTotal());
 					}
 
-				} else if (frame == LAST_FRAME) {
-					if (!lastBall) {
-						if (nowStatus.get("isSpare")) {
-							total += nScore;
-							nowStatus = updateStatus(nowStatus, "");
-						} else if (isOneOfStrikeTurkeyDouble(nowStatus)) {
-							if (ball == SECOND_BALL) {
-								total += nScore;
-								nowStatus = updateStatus(nowStatus, "");
+				} else if (dto.getFrame() == LAST_FRAME) {
+					if (!dto.isLastBall()) {
+						if (dto.getNowStatus("Spare")) {
+							dto.setTotal(dto.getTotal() + dto.getnScore());
+							dto.setNowStatus("");
+						} else if (isOneOfStrikeTurkeyDouble(dto)) {
+							if (dto.getBall() == SECOND_BALL) {
+								dto.setTotal(dto.getTotal() + dto.getnScore());
+								dto.setNowStatus("");
 							} else {
-								if (nowStatus.get("isStrike"))
-									total += nScore;
+								if (dto.getNowStatus("Strike"))
+									dto.setTotal(dto.getTotal() + dto.getnScore());
 								else
-									total += nScore * 2;
-								if (nowStatus.get("isTurkey"))
-									totalTemp = total + "+10+" + score + "+";
+									dto.setTotal(dto.getTotal() + dto.getnScore() * 2);
+								if (dto.getNowStatus("Turkey"))
+									dto.setTotalTemp(dto.getTotal() + "+10+" + dto.getScore() + "+");
 								else
-									totalTemp += score + "+";
+									dto.setTotalTemp(dto.getTotal() + dto.getScore() + "+");
 							}
 						}
 					}
 
-					if (isOneOfStrikeTurkeyDouble(nowStatus))
-						printTemp += totalTemp;
+					if (isOneOfStrikeTurkeyDouble(dto))
+						dto.setPrintTemp(dto.getPrintTemp() + dto.getTotalTemp());
 					else
-						printTemp += total;
+						dto.setPrintTemp(dto.getPrintTemp() + dto.getTotal());
 
 				}
 
-				if (lastBall)
-					printTemp = "출력 = " + score + "[10, 3, " + total;
+				if (dto.isLastBall())
+					dto.setPrintTemp("출력 = " + dto.getScore() + "[ 10, 3," + dto.getTotal());
 
-				nowScore(printTemp);
+				nowScore(dto.getPrintTemp());
 
-				if (pin == EMPTY_PIN || ball == SECOND_BALL) {
-					pin = FULL_PIN;
+				if (dto.getPin() == EMPTY_PIN || dto.getBall() == SECOND_BALL) {
+					dto.setPin(FULL_PIN);
 
-					if (frame != LAST_FRAME || lastBall)
+					if (dto.getFrame() != LAST_FRAME || dto.isLastBall())
 						break;
-					else if (ball != FIRST_BALL) {
-						if (result[9][0] + result[9][1] == FULL_PIN || result[9][0] == FULL_PIN) {
-							lastBall = true;
-							ball--;
+					else if (dto.getBall() != FIRST_BALL) {
+						if (dto.getResult(9, 0)+ dto.getResult(9, 1) == FULL_PIN || dto.getResult(9, 0) == FULL_PIN) {
+							dto.setLastBall(true);
+							dto.setBall(dto.getBall()-1);
 						} else
 							break;
 					}
@@ -167,27 +147,19 @@ public class BowlingGame {
 			}
 		}
 
-		show(result, score);
-		System.out.println("최종점수 :" + total);
+		show(dto);
+		System.out.println("최종점수 :" + dto.getTotal());
 
 		System.out.println("-------------------프로그램을 종료합니다-------------------");
 
 	}
 
-	private static boolean isOneOfStrikeTurkeyDouble(Map<String, Boolean> nowStatus) {
-		return nowStatus.get("isStrike") || nowStatus.get("isTurkey") || nowStatus.get("isDouble");
+	private static boolean isOneOfStrikeTurkeyDouble(BowlingDTO dto) {
+		return dto.getNowStatus("Strike") || dto.getNowStatus("Turkey") || dto.getNowStatus("Double");
 	}
 
 	private static void nowScore(String printTemp) {
 		System.out.println(printTemp + "]");
-	}
-
-	private static Map<String, Boolean> updateStatus(Map<String, Boolean> nowStatus, String update) {
-		nowStatus.replaceAll((key, value) -> value = false);
-		if (update != "")
-			nowStatus.replace(update, true);
-		return nowStatus;
-
 	}
 
 	private static boolean isNumber(String input) {
@@ -203,56 +175,57 @@ public class BowlingGame {
 		return false;
 	}
 
-	private static void show(int[][] result, String score) {
+	private static void show(BowlingDTO dto) {
+		int resultLength = dto.getResultLength();
 		System.out.println(
 				"##################################################기록판###############################################");
-		for (int i = 1; i <= result.length / 2; i++) {
+		for (int i = 1; i <= resultLength / 2; i++) {
 			System.out.print("\t|\t" + i);
 		}
 		System.out.println("\t|");
 
-		for (int i = 0; i < result.length / 2; i++) {
-			if (result[i][0] == 10)
+		for (int i = 0; i < resultLength / 2; i++) {
+			if (dto.getResult(i,0) == 10)
 				System.out.print("\t|\tX, ");
-			else if ((result[i][0] + result[i][1]) == 10) {
-				System.out.print("\t|\t" + result[i][0] + ", /");
+			else if ((dto.getResult(i,0) + dto.getResult(i,1)) == 10) {
+				System.out.print("\t|\t" + dto.getResult(i,0) + ", /");
 			} else
-				System.out.print("\t|\t" + result[i][0] + ", " + result[i][1] + "");
+				System.out.print("\t|\t" + dto.getResult(i,0) + ", " + dto.getResult(i,1) + "");
 		}
 		System.out.println("\t|");
 
 		System.out.println(
 				"------------------------------------------------------------------------------------------------------");
-		for (int i = result.length / 2 + 1; i <= result.length; i++) {
+		for (int i = resultLength / 2 + 1; i <= resultLength; i++) {
 			System.out.print("\t|\t" + i);
 		}
 		System.out.println("\t|");
 
-		for (int i = result.length / 2; i < result.length - 1; i++) {
-			if (result[i][0] == 10)
+		for (int i =resultLength / 2; i < resultLength - 1; i++) {
+			if (dto.getResult(i,0) == 10)
 				System.out.print("\t|\tX, ");
-			else if ((result[i][0] + result[i][1]) == 10) {
-				System.out.print("\t|\t" + result[i][0] + ", /");
+			else if ((dto.getResult(i,0) + dto.getResult(i,1)) == 10) {
+				System.out.print("\t|\t" + dto.getResult(i,0) + ", /");
 			} else
-				System.out.print("\t|\t" + result[i][0] + ", " + result[i][1] + "");
+				System.out.print("\t|\t" + dto.getResult(i,0) + ", " + dto.getResult(i,1) + "");
 		}
 
-		if (result[9][0] + result[9][1] == 20)
+		if (dto.getResult(9,0) + dto.getResult(9,1) == 20)
 			System.out.print("\t|\tX, X, ");
-		else if (result[9][0] + result[9][1] == 10)
-			System.out.print("\t|\t" + result[9][0] + ", /, ");
-		else if (result[9][0] + result[9][1] > 10)
-			System.out.print("\t|\tX, " + result[9][1] + ", ");
+		else if (dto.getResult(9,0) + dto.getResult(9,1) == 10)
+			System.out.print("\t|\t" + dto.getResult(9,0) + ", /, ");
+		else if (dto.getResult(9,0) + dto.getResult(9,1) > 10)
+			System.out.print("\t|\tX, " + dto.getResult(9,1) + ", ");
 		else
-			System.out.println("\t|\t" + result[9][0] + ", " + result[9][1] + ", 0|");
+			System.out.println("\t|\t" + dto.getResult(9,0) + ", " + dto.getResult(9,1) + ", 0|");
 
-		if (result[9][0] + result[9][1] >= 10) {
-			if (score.equals("10"))
+		if (dto.getResult(9,0) + dto.getResult(9,1) >= 10) {
+			if (dto.getScore().equals("10"))
 				System.out.println("X\t|");
-			else if ((result[9][0] + result[9][1]) != 10 && (Integer.parseInt(score) + result[9][1]) == 10)
+			else if ((dto.getResult(9,0) + dto.getResult(9,1)) != 10 && (dto.getnScore() + dto.getResult(9,1)) == 10)
 				System.out.println("/\t|");
 			else
-				System.out.println(score + "\t|");
+				System.out.println(dto.getScore() + "\t|");
 		}
 
 		System.out.println(
