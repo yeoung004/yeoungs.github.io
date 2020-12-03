@@ -1,3 +1,4 @@
+package Bowling;
 public class BowlingGame {
 	public static void main(String[] args) {
 		BowlingDTO bowlingDto = new BowlingDTO();

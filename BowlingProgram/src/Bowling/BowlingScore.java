@@ -1,3 +1,4 @@
+package Bowling;
 
 public class BowlingScore {
 	private BowlingDTO dto;

@@ -1,3 +1,4 @@
+package Bowling;
 import java.util.Scanner;
 
 public class BowlingRolling {

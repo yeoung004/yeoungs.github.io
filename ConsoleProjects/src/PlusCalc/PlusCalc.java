@@ -1,4 +1,4 @@
-package test;
+package PlusCalc;
 import java.util.Scanner;
 
 public class PlusCalc {
