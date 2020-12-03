@@ -2,14 +2,21 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class BowlingDTO {
-
+	final static int EMPTY_PIN = 0;
+	final static int FIRST_BALL = 1;
+	final static int SECOND_BALL = 2;
+	final static int FINAL_BALL = 3;
+	final static int FULL_PIN = 10;
+	final static int FIRST_FRAME = 1;
+	final static int LAST_FRAME = 10;
+	
 	private String score = "";
 	private String totalTemp = "";
 	private String printTemp = "";
 	private int[][] result = { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 },
 			{ 0, 0 } };
 	
-	private int ballCnt = 0;
+	private int ballCnt = 1;
 	private int ball = 1;
 	private int pin = 10;
 	private int frame = 1;
@@ -125,5 +132,9 @@ public class BowlingDTO {
 		this.nowStatus.replaceAll((key, value) -> value = false);
 		if (update != "")
 			this.nowStatus.replace(update, true);
+	}
+	
+	public boolean isOneOfStrikeTurkeyDouble() {
+		return getNowStatus("Strike") || getNowStatus("Turkey") || getNowStatus("Double");
 	}
 }
