@@ -1,39 +1,51 @@
 package Bowling;
+
 import java.util.Scanner;
 
 public class BowlingRolling {
-	private BowlingDTO bowlingDto;
 	private Scanner roll = new Scanner(System.in);
-	
-	public BowlingRolling(BowlingDTO bowlingDto) {
-		this.bowlingDto = bowlingDto;
+
+	public boolean fillBall(UserDTO userDto) {
+		if (userDto.getPin() == UserDTO.EMPTY_PIN || userDto.getBall() == UserDTO.SECOND_BALL) {
+			userDto.setPin(UserDTO.FULL_PIN);
+
+			if (userDto.getBall() != UserDTO.FIRST_BALL
+					&& (userDto.getResult(9, 0) + userDto.getResult(9, 1) == UserDTO.STRIKE_SPARE
+							|| userDto.getResult(9, 0) == UserDTO.STRIKE_SPARE)) {
+				userDto.setLastBall(true);
+				return false;
+			} else if (userDto.getFrame() == UserDTO.LAST_FRAME)
+				return false;
+			else
+				return true;
+		}
+		return false;
 	}
 
-	public int grammarCheck() {
+	public int grammarCheck(String score, int pin) {
 		int check = 1;
 
-		if (bowlingDto.getScore().equals("")) {
+		if (score.equals("")) {
 			System.out.print("정말 종료하시겠습니까? y/n : ");
-			bowlingDto.setScore(roll.nextLine());
-			if (bowlingDto.getScore().equals("y")) {
+			score = roll.nextLine();
+			if (score.equals("y")) {
 				check = 0;
-			}
-			System.out.println("다시 시작합니다...");
-		}else if (isNumber(bowlingDto.getScore())) {
+			} else
+				System.out.println("다시 시작합 니다...");
+		} else if (isNumber(score)) {
 			check = 1;
 			System.out.println("숫자값만 입력해주세요!!!");
-		} else if (isScoreOfNumber()) {
+		} else if (isScoreOfNumber(Integer.parseInt(score), pin)) {
 			check = 1;
-			System.out.println("점수는 0-" + bowlingDto.getPin() + "만 입력해주세요!!!");
-		}else
+			System.out.println("점수는 0-" + pin + "만 입력해주세요!!!");
+		} else
 			check = 2;
 
 		return check;
 	}
 
-	public boolean isScoreOfNumber() {
-		bowlingDto.setnScore(Integer.parseInt(bowlingDto.getScore()));
-		return bowlingDto.getnScore() < 0 || bowlingDto.getnScore() > bowlingDto.getPin();
+	public boolean isScoreOfNumber(int score, int pin) {
+		return score < 0 || score > pin;
 	}
 
 	public boolean isNumber(String input) {
@@ -49,22 +61,26 @@ public class BowlingRolling {
 		return true;
 	}
 
-	public int rolling() {
+	public int rolling(int[][] testPins, boolean mode, UserDTO userDto) {
 		int check = 0;
 
-		System.out.print("> " + bowlingDto.getBallCnt() + " 번째 입력 값 ");
-		bowlingDto.setScore(roll.nextLine());
-		check = grammarCheck();
+		System.out.print(userDto.getPlayerNumber() + "번 선수" + "> " + userDto.getBallCnt() + " 번째 입력 값 ");
+		if (mode)
+			userDto.setScore(testPins[userDto.getFrame() - 1][userDto.getBall() - 1] + "");
+		else
+			userDto.setScore(roll.nextLine());
+		check = grammarCheck(userDto.getScore(), userDto.getPin());
 
 		if (check == 2) {
-			if (!bowlingDto.isLastBall())
-				bowlingDto.setResult(bowlingDto.getFrame() - 1, bowlingDto.getBall() - 1, bowlingDto.getnScore());
+			userDto.setnScore(Integer.parseInt(userDto.getScore()));
+			userDto.setBallCnt(userDto.getBallCnt() + 1);
+			userDto.setPin(userDto.getPin() - userDto.getnScore());
+			userDto.setTotal(userDto.getTotal() + userDto.getnScore());
 
-			bowlingDto.setBallCnt(bowlingDto.getBallCnt() + 1);
-			bowlingDto.setPin(bowlingDto.getPin() - bowlingDto.getnScore());
-			bowlingDto.setTotal(bowlingDto.getTotal() + bowlingDto.getnScore());
+			if (!userDto.isLastBall())
+				userDto.setResult(userDto.getFrame() - 1, userDto.getBall() - 1, userDto.getnScore());
 		}
-		
+
 		return check;
 
 	}

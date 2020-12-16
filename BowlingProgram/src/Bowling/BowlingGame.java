@@ -1,56 +1,45 @@
 package Bowling;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
 public class BowlingGame {
 	public static void main(String[] args) {
-		BowlingDTO bowlingDto = new BowlingDTO();
-		BowlingRolling bowlingrolling = new BowlingRolling(bowlingDto);
-		BowlingScore bowlingScore = new BowlingScore(bowlingDto);
-		BowlingScoreShow bowlingScoreShow = new BowlingScoreShow(bowlingDto);
-		
-		boolean isExit = false;
-		int check = 0;
-		
+		List<UserDTO> palyersDto = new ArrayList<UserDTO>();
+		BowlingStart start = new BowlingStart();
+		BowlingScoreRecord bowlingScoreRecord = new BowlingScoreRecord();
+
 		System.out.println("-------------------프로그램을 시작합니다-------------------");
+		setPlayer(palyersDto);
 
-		for (bowlingDto.setFrame(BowlingDTO.FIRST_FRAME); bowlingDto.getFrame() <= BowlingDTO.LAST_FRAME; bowlingDto
-				.setFrame(bowlingDto.getFrame() + 1)) {
-			if (isExit)
-				break;
-			for (bowlingDto.setBall(BowlingDTO.FIRST_BALL); bowlingDto.getBall() <= BowlingDTO.SECOND_BALL;) {
-				
-				check = bowlingrolling.rolling();
+		start.start(false, null, null, palyersDto);
 
-				if (check == 0) {
-					isExit = true;
-					break;
-				} else if (check == 1) {
-					continue;
-				}
-				
-				bowlingScore.setScore();
-				bowlingScoreShow.setNowScore();
-				bowlingScoreShow.nowScore();
-
-				if (bowlingDto.getPin() == BowlingDTO.EMPTY_PIN || bowlingDto.getBall() == BowlingDTO.SECOND_BALL) {
-					bowlingDto.setPin(BowlingDTO.FULL_PIN);
-
-					if (bowlingDto.getFrame() != BowlingDTO.LAST_FRAME || bowlingDto.isLastBall())
-						break;
-					else if (bowlingDto.getBall() != BowlingDTO.FIRST_BALL) {
-						if (bowlingDto.getResult(9, 0) + bowlingDto.getResult(9, 1) == BowlingDTO.FULL_PIN
-								|| bowlingDto.getResult(9, 0) == BowlingDTO.FULL_PIN) {
-							bowlingDto.setLastBall(true);
-							bowlingDto.setBall(bowlingDto.getBall() - 1);
-						} else
-							break;
-					}
-				}
-
-				bowlingDto.setBall(bowlingDto.getBall() + 1);
-			}
+		for (int i = 0; i < palyersDto.size(); i++) {
+			System.out.println((i + 1) + "번 째 선수");
+			bowlingScoreRecord.show(palyersDto.get(i).getResult(), palyersDto.get(i).getnScore(),
+					palyersDto.get(i).getTotal());
+			System.out.println();
 		}
-		bowlingScoreShow.show();
-		System.out.println("-------------------프로그램을 종료합니다-------------------");
 
+		System.out.println("-------------------프로그램을 종료합니다-------------------");
+	}
+
+	private static void setPlayer(List<UserDTO> palyersDto) {
+		Scanner player = new Scanner(System.in);
+		int players = 0;
+
+		while (players < 1 || players > 5) {
+			System.out.println("인원수를 설정해 주세요(1-5 사이)");
+			players = player.nextInt();
+
+			if (players < 1 || players > 5)
+				System.out.println("1명 이상의 선수를 선택해 주세요");
+		}
+
+		for (int i = 0; i < players; i++) {
+			palyersDto.add(new UserDTO(i + 1));
+		}
 	}
 
 }

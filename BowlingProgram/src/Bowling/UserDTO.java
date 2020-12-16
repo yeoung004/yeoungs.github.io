@@ -2,7 +2,7 @@ package Bowling;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BowlingDTO {
+public class UserDTO {
 	final static int EMPTY_PIN = 0;
 	final static int FIRST_BALL = 1;
 	final static int SECOND_BALL = 2;
@@ -10,28 +10,41 @@ public class BowlingDTO {
 	final static int FULL_PIN = 10;
 	final static int FIRST_FRAME = 1;
 	final static int LAST_FRAME = 10;
-	
+	final static int STRIKE_SPARE = 10;
+	 
 	private String score = "";
-	private String totalTemp = "";
-	private String printTemp = "";
 	private int[][] result = { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 },
 			{ 0, 0 } };
+
+	private Map<String, Boolean> nowStatus = new HashMap<String, Boolean>();
 	
-	private int ballCnt = 1;
 	private int ball = 1;
 	private int pin = 10;
 	private int frame = 1;
 	private int total = 0;
 	private int nScore = 0;
 	private boolean lastBall = false;
+	private String printTemp = "";
+	private int ballCnt = 1;
+	private String totalTemp = "";
+	private int playerNumber = 0;
 	
-	private Map<String, Boolean> nowStatus = new HashMap<String, Boolean>();
-	
-	public BowlingDTO() {
+
+	public UserDTO(int playerNumber) {
+		this.playerNumber = playerNumber;
+		
 		nowStatus.put("Turkey", false);
 		nowStatus.put("Strike", false);
 		nowStatus.put("Spare", false);
 		nowStatus.put("Double", false);
+	}
+	
+	public int getPlayerNumber() {
+		return playerNumber;
+	}
+
+	public void setLastBall(boolean lastBall) {
+		this.lastBall = lastBall;
 	}
 
 	public int getResultLength(){
@@ -45,24 +58,11 @@ public class BowlingDTO {
 		this.score = score;
 	}
 
-	public String getTotalTemp() {
-		return totalTemp;
-	}
-
-	public void setTotalTemp(String totalTemp) {
-		this.totalTemp = totalTemp;
-	}
-
-	public String getPrintTemp() {
-		return printTemp;
-	}
-
-	public void setPrintTemp(String printTemp) {
-		this.printTemp = printTemp;
-	}
-
 	public int getResult(int frame, int ball) {
 		return this.result[frame][ball];
+	}
+	public int[][] getResult() {
+		return this.result;
 	}
 
 	public void setResult(int frame, int ball, int nScore) {
@@ -121,7 +121,7 @@ public class BowlingDTO {
 		return lastBall;
 	}
 
-	public void setLastBall(boolean lastBall) {
+	public void userDto(boolean lastBall) {
 		this.lastBall = lastBall;
 	}
 
@@ -137,5 +137,21 @@ public class BowlingDTO {
 	
 	public boolean isOneOfStrikeTurkeyDouble() {
 		return getNowStatus("Strike") || getNowStatus("Turkey") || getNowStatus("Double");
+	}
+
+	public String getPrintTemp() {
+		return printTemp;
+	}
+
+	public void setPrintTemp(String printTemp) {
+		this.printTemp = printTemp;
+	}
+
+	public String getTotalTemp() {
+		return totalTemp;
+	}
+
+	public void setTotalTemp(String totalTemp) {
+		this.totalTemp = totalTemp;
 	}
 }

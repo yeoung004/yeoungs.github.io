@@ -1,43 +1,39 @@
 package Bowling;
 
 public class BowlingScore {
-	private BowlingDTO dto;
+	private UserDTO userDto;
 
-	public BowlingScore(BowlingDTO dto) {
-		this.dto = dto;
-	}
-
-	public void setScore() {
-		if (dto.getFrame() < BowlingDTO.LAST_FRAME) {
-			if (dto.getBall() == BowlingDTO.FIRST_BALL) {
-				if (dto.getNowStatus("Spare")) {
-					dto.setTotal(dto.getTotal() + dto.getnScore());
-					dto.setNowStatus("");
-				} else if (dto.getNowStatus("Strike")) {
-					dto.setTotal(dto.getTotal() + dto.getnScore());
-				} else if ((dto.getNowStatus("Turkey") || dto.getNowStatus("Double"))) {
-					dto.setTotal(dto.getTotal() + dto.getnScore() * 2);
+	public void setScore(UserDTO userDto) {
+		if (userDto.getFrame() < UserDTO.LAST_FRAME) {
+			if (userDto.getBall() == UserDTO.FIRST_BALL) {
+				if (userDto.getNowStatus("Spare")) {
+					userDto.setTotal(userDto.getTotal() + userDto.getnScore());
+					userDto.setNowStatus("");
+				} else if (userDto.getNowStatus("Strike")) {
+					userDto.setTotal(userDto.getTotal() + userDto.getnScore());
+				} else if ((userDto.getNowStatus("Turkey") || userDto.getNowStatus("Double"))) {
+					userDto.setTotal(userDto.getTotal() + userDto.getnScore() * 2);
 				}
 			} else {
-				if (dto.isOneOfStrikeTurkeyDouble()) {
-					dto.setTotal(dto.getTotal() + dto.getnScore());
-					dto.setNowStatus("");
+				if (userDto.isOneOfStrikeTurkeyDouble()) {
+					userDto.setTotal(userDto.getTotal() + userDto.getnScore());
+					userDto.setNowStatus("");
 				}
 			}
-		} else if (dto.getFrame() == BowlingDTO.LAST_FRAME) {
-			if (!dto.isLastBall()) {
-				if (dto.getNowStatus("Spare")) {
-					dto.setTotal(dto.getTotal() + dto.getnScore());
-					dto.setNowStatus("");
-				} else if (dto.isOneOfStrikeTurkeyDouble()) {
-					if (dto.getBall() == BowlingDTO.SECOND_BALL) {
-						dto.setTotal(dto.getTotal() + dto.getnScore());
-						dto.setNowStatus("");
+		} else if (userDto.getFrame() == UserDTO.LAST_FRAME) {
+			if (!userDto.isLastBall()) {
+				if (userDto.getNowStatus("Spare")) {
+					userDto.setTotal(userDto.getTotal() + userDto.getnScore());
+					userDto.setNowStatus("");
+				} else if (userDto.isOneOfStrikeTurkeyDouble()) {
+					if (userDto.getBall() == UserDTO.SECOND_BALL) {
+						userDto.setTotal(userDto.getTotal() + userDto.getnScore());
+						userDto.setNowStatus("");
 					} else {
-						if (dto.getNowStatus("Strike"))
-							dto.setTotal(dto.getTotal() + dto.getnScore());
+						if (userDto.getNowStatus("Strike"))
+							userDto.setTotal(userDto.getTotal() + userDto.getnScore());
 						else
-							dto.setTotal(dto.getTotal() + dto.getnScore() * 2);
+							userDto.setTotal(userDto.getTotal() + userDto.getnScore() * 2);
 					}
 				}
 			}
