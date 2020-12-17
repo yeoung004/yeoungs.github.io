@@ -15,7 +15,7 @@ public class BowlingStart {
 	}
 
 	// true: test모드, false: 일반모드
-	public int[] start(boolean mode, int [] lastTestPin, int[][][] testPins, List<UserDTO> palyersDto) {
+	public int[] start(boolean mode, int[] lastTestPin, int[][][] testPins, List<UserDTO> palyersDto) {
 		int check = 0;
 
 		for (int frame = UserDTO.FIRST_FRAME; frame <= UserDTO.LAST_FRAME; frame++) {
@@ -25,13 +25,15 @@ public class BowlingStart {
 					userDto.setBall(ball);
 
 					if (mode)
-						check = bowlingRolling.rolling(testPins[userDto.getPlayerNumber()-1], mode, userDto);
+						check = bowlingRolling.rolling(testPins[userDto.getPlayerNumber() - 1], mode, userDto);
 					else
 						check = bowlingRolling.rolling(null, mode, userDto);
 
 					if (check == 0) {
 						break;
 					} else if (check == 1) {
+						userDto.setBall(userDto.getBall() - 1);
+						userDto.setBallCnt(userDto.getBallCnt() - 1);
 						continue;
 					}
 
@@ -50,8 +52,8 @@ public class BowlingStart {
 		if (mode) {
 			int result[] = new int[palyersDto.size()];
 			for (int i = 0; i < palyersDto.size(); i++) {
-				if((palyersDto.get(i).getResult(9,0) + palyersDto.get(i).getResult(9,1)) >= 10)
-					result[i] = palyersDto.get(i).getTotal() + lastTestPin[i] - palyersDto.get(i).getResult(9,1);
+				if ((palyersDto.get(i).getResult(9, 0) + palyersDto.get(i).getResult(9, 1)) >= 10)
+					result[i] = palyersDto.get(i).getTotal() + lastTestPin[i] - palyersDto.get(i).getResult(9, 1);
 				else
 					result[i] = palyersDto.get(i).getTotal();
 			}
