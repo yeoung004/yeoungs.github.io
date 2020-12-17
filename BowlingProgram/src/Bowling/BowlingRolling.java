@@ -30,14 +30,17 @@ public class BowlingRolling {
 			score = roll.nextLine();
 			if (score.equals("y")) {
 				check = 0;
+				return check;
 			} else
 				System.out.println("다시 시작합 니다...");
-		} else if (isNumber(score)) {
+		} else if (!isNumber(score)) {
 			check = 1;
 			System.out.println("숫자값만 입력해주세요!!!");
+			return check;
 		} else if (isScoreOfNumber(Integer.parseInt(score), pin)) {
 			check = 1;
 			System.out.println("점수는 0-" + pin + "만 입력해주세요!!!");
+			return check;
 		} else
 			check = 2;
 
@@ -54,9 +57,10 @@ public class BowlingRolling {
 		for (int i = 0; i < input.length(); i++) {
 			temp = input.charAt(i);
 
-			if ('0' <= temp && temp <= '9') {
+			if (!('0' <= temp && temp <= '9')) {
 				return false;
 			}
+
 		}
 		return true;
 	}

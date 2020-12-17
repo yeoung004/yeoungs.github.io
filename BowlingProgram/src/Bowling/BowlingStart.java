@@ -30,10 +30,9 @@ public class BowlingStart {
 						check = bowlingRolling.rolling(null, mode, userDto);
 
 					if (check == 0) {
-						break;
+						return null;
 					} else if (check == 1) {
-						userDto.setBall(userDto.getBall() - 1);
-						userDto.setBallCnt(userDto.getBallCnt() - 1);
+						ball--;
 						continue;
 					}
 

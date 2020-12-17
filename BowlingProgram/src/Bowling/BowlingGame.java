@@ -28,13 +28,29 @@ public class BowlingGame {
 	private static void setPlayer(List<UserDTO> palyersDto) {
 		Scanner player = new Scanner(System.in);
 		int players = 0;
+		char temp = ' ';
+		String input = "";
+		boolean isCorrect = true;
 
-		while (players < 1 || players > 5) {
+		while (true) {
 			System.out.println("인원수를 설정해 주세요(1-5 사이)");
-			players = player.nextInt();
+			input = player.next();
 
-			if (players < 1 || players > 5)
-				System.out.println("1명 이상의 선수를 선택해 주세요");
+			for (int i = 0; i < input.length(); i++) {
+				temp = input.charAt(i);
+
+				if (!('1' <= temp && temp <= '5')) {
+					isCorrect = false;
+					break;
+				}
+			}
+			if (!isCorrect) {
+				System.out.println("올바른 값을 입력해 주세요!!");
+				continue;
+			} else {
+				players = Integer.parseInt(input);
+				break;
+			}
 		}
 
 		for (int i = 0; i < players; i++) {
