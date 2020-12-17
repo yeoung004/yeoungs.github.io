@@ -31,8 +31,8 @@ public class BowlingGame {
 		char temp = ' ';
 		String input = "";
 		boolean isCorrect = true;
-
 		while (true) {
+			isCorrect = true;
 			System.out.println("인원수를 설정해 주세요(1-5 사이)");
 			input = player.next();
 
