@@ -1,8 +1,6 @@
 package Bowling;
 
 public class BowlingScore {
-	private UserDTO userDto;
-
 	public void setScore(UserDTO userDto) {
 		if (userDto.getFrame() < UserDTO.LAST_FRAME) {
 			if (userDto.getBall() == UserDTO.FIRST_BALL) {

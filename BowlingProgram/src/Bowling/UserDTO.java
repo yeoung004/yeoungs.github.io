@@ -21,11 +21,11 @@ public class UserDTO {
 	private int ball = 1;
 	private int pin = 10;
 	private int frame = 1;
-	private int total = 0;
 	private int nScore = 0;
 	private boolean lastBall = false;
 	private String printTemp = "";
 	private int ballCnt = 1;
+	private int total = 0;
 	private String totalTemp = "";
 	private int playerNumber = 0;
 	

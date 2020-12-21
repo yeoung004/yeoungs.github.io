@@ -1,7 +1,9 @@
 package Bowling;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class BowlingGame_v1 {
 	final static int EMPTY_PIN = 0;
@@ -192,16 +194,8 @@ public class BowlingGame_v1 {
 	}
 
 	private static boolean isNumber(String input) {
-		char temp = ' ';
-
-		for (int i = 0; i < input.length(); i++) {
-			temp = input.charAt(i);
-
-			if ('0' <= temp && temp <= '9') {
-				return true;
-			}
-		}
-		return false;
+		String pattern = "^[0-9]*$";
+		return Pattern.matches(pattern, input);
 	}
 
 	private static void show(int[][] result, String score) {

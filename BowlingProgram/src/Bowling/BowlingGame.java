@@ -3,6 +3,7 @@ package Bowling;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class BowlingGame {
 	public static void main(String[] args) {
@@ -28,25 +29,17 @@ public class BowlingGame {
 	private static void setPlayer(List<UserDTO> palyersDto) {
 		Scanner player = new Scanner(System.in);
 		int players = 0;
-		char temp = ' ';
 		String input = "";
 		boolean isCorrect = true;
+		String pattern = "^[1-5]*$";
+
 		while (true) {
 			isCorrect = true;
 			System.out.println("인원수를 설정해 주세요(1-5 사이)");
 			input = player.next();
 
-			for (int i = 0; i < input.length(); i++) {
-				temp = input.charAt(i);
-
-				if (!('1' <= temp && temp <= '5')) {
-					isCorrect = false;
-					break;
-				}
-			}
-			if (!isCorrect) {
+			if (!Pattern.matches(pattern, input)) {
 				System.out.println("올바른 값을 입력해 주세요!!");
-				continue;
 			} else {
 				players = Integer.parseInt(input);
 				break;
