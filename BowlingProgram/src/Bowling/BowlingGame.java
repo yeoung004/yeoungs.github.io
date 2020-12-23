@@ -30,11 +30,9 @@ public class BowlingGame {
 		Scanner player = new Scanner(System.in);
 		int players = 0;
 		String input = "";
-		boolean isCorrect = true;
-		String pattern = "^[1-5]*$";
+		String pattern = "^[1-5]$";
 
 		while (true) {
-			isCorrect = true;
 			System.out.println("인원수를 설정해 주세요(1-5 사이)");
 			input = player.next();
 

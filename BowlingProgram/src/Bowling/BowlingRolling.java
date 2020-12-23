@@ -1,6 +1,7 @@
 package Bowling;
 
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 public class BowlingRolling {
 	private Scanner roll = new Scanner(System.in);
@@ -52,15 +53,9 @@ public class BowlingRolling {
 	}
 
 	public boolean isNumber(String input) {
-		char temp = ' ';
-
-		for (int i = 0; i < input.length(); i++) {
-			temp = input.charAt(i);
-
-			if (!('0' <= temp && temp <= '9')) {
-				return false;
-			}
-
+		String pattern = "^[1-5]$";
+		if (!Pattern.matches(pattern, input)) {
+			return false;
 		}
 		return true;
 	}
