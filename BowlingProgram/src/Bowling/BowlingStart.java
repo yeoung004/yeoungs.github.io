@@ -4,8 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Scanner;
+import java.util.Map;
 
 public class BowlingStart {
 
@@ -19,31 +20,42 @@ public class BowlingStart {
 		bowlingScoreRecord = new BowlingScoreRecord();
 	}
 
-	// true: test모드, false: 일반모드
-	public int[] start(boolean mode, int[] lastTestPin, int[][][] testPins, List<UserDTO> playersDto)
-			throws IOException {
+	// 0: test모드, 1: 일반모드, 2:이어하기
+	public int[] start(int mode, int[] lastTestPin, int[][][] testPins, List<UserDTO> playersDto) throws IOException {
 		int check = 0;
 		int player = 0;
 		int frame = UserDTO.FIRST_FRAME;
 		int ball = UserDTO.FIRST_BALL;
-		File file = new File("backup.txt");
+		Map<String, Integer> gameData = new HashMap<String, Integer>();
+		String[] loadGame = new String [3];
 		
-		if (!file.exists())
-			file.createNewFile();
+		File gameDatafile = new File("gameBackup.txt");
+		File playerDatafile = new File("playerBackup.txt");
+		
+		if(mode == 2){
+			BufferedReader reader = new BufferedReader(new FileReader(gameDatafile));
+			loadGame = reader.readLine().toString().split("/");
+			frame = Integer.parseInt(loadGame[0]); 
+			ball = Integer.parseInt(loadGame[1]);
+			player = Integer.parseInt(loadGame[2])+1;
+			
+			if((playersDto.size()+1) < player)
+				player = 1;
+			
+		}
+		
 		
 		for (; frame <= UserDTO.LAST_FRAME; frame++) {
 			for (; player < playersDto.size(); player++) {
-				
-				bowlingScoreRecord.backup(playersDto, file);
 				for (; ball <= UserDTO.SECOND_BALL; ball++) {
 					playersDto.get(player).setFrame(frame);
 					playersDto.get(player).setBall(ball);
 
-					if (mode)
-						check = bowlingRolling.rolling(testPins[playersDto.get(player).getPlayerNumber() - 1], mode,
+					if (mode == 0)
+						check = bowlingRolling.rolling(testPins[playersDto.get(player).getPlayerNumber() - 1], true,
 								playersDto.get(player));
-					else
-						check = bowlingRolling.rolling(null, mode, playersDto.get(player));
+					else if (mode == 1)
+						check = bowlingRolling.rolling(null, false, playersDto.get(player));
 
 					if (check == 0) {
 						return null;
@@ -63,12 +75,18 @@ public class BowlingStart {
 					}
 				}
 				ball = UserDTO.FIRST_BALL;
+				gameData.put("frame", frame);
+				gameData.put("ball", ball);
+				gameData.put("player", player);
+				bowlingScoreRecord.backup(playersDto, gameData, gameDatafile, playerDatafile);
 			}
 			player = 0;
 		}
+		
+		bowlingScoreRecord.resetFiles(gameDatafile, playerDatafile);
 
 		// 테스트용
-		if (mode) {
+		if (mode == 0) {
 			int result[] = new int[playersDto.size()];
 			for (int i = 0; i < playersDto.size(); i++) {
 				if ((playersDto.get(i).getResult(9, 0) + playersDto.get(i).getResult(9, 1)) >= 10)

@@ -128,20 +128,28 @@ public class BowlingScoreRecord {
 		System.out.println(printTemp + "]");
 	}
 
-	public void backup(List<UserDTO> playersDto, File file) throws IOException {
+	public void backup(List<UserDTO> playersDto, Map<String, Integer> gameData, File gameDatafile, File playerDatafile) throws IOException {
+		BufferedWriter writer;
+
 		JSONObject data;
 		Map<String, Boolean> nowStatus;
 		ArrayList<ArrayList<Integer>> result;
 		ArrayList<Integer> child;
 		JSONObject player = new JSONObject();
-		BufferedWriter writer = new BufferedWriter(new FileWriter(file)); 
-		
+
+		if (!playerDatafile.exists())
+			playerDatafile.createNewFile();
+		if (!gameDatafile.exists())
+			gameDatafile.createNewFile();
+
+		writer = new BufferedWriter(new FileWriter(playerDatafile));
+
 		for (UserDTO userDto : playersDto) {
 			nowStatus = new HashMap<String, Boolean>();
 			result = new ArrayList<ArrayList<Integer>>();
 			child = new ArrayList<Integer>();
 			data = new JSONObject();
-			
+
 			nowStatus.put("Turkey", userDto.getNowStatus("Turkey"));
 			nowStatus.put("Strike", userDto.getNowStatus("Strike"));
 			nowStatus.put("Spare", userDto.getNowStatus("Spare"));
@@ -154,7 +162,7 @@ public class BowlingScoreRecord {
 				result.add(child);
 				child = new ArrayList<Integer>();
 			}
-			
+
 			data.put("ball", userDto.getBall());
 			data.put("ballCnt", userDto.getBallCnt());
 			data.put("frame", userDto.getFrame());
@@ -164,14 +172,30 @@ public class BowlingScoreRecord {
 			data.put("printTemp", userDto.getPrintTemp());
 			data.put("result", result);
 			data.put("total", userDto.getTotal());
+			data.put("playerNumber", userDto.getPlayerNumber());
 			data.put("totalTemp", userDto.getTotalTemp());
-			
+			data.put("lastBall", userDto.isLastBall());
+
 			player.put(userDto.getPlayerNumber(), data);
 		}
 		writer.write(player.toJSONString());
-		writer.flush();
+		writer.close();
+
+		writer = new BufferedWriter(new FileWriter(gameDatafile));
+		writer.write(gameData.get("frame") + "/" + gameData.get("ball") + "/" + gameData.get("player"));
+		writer.close();
+
+	}
+	public void resetFiles(File gameDatafile, File playerDatafile) throws IOException{
+		BufferedWriter writer;
+		
+		writer = new BufferedWriter(new FileWriter(gameDatafile));
+		writer.write("");
 		writer.close();
 		
-
+		writer = new BufferedWriter(new FileWriter(playerDatafile));
+		writer.write("");
+		writer.close();
+		
 	}
 }

@@ -1,4 +1,5 @@
 package Bowling;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +30,14 @@ public class UserDTO {
 	private String totalTemp = "";
 	private int playerNumber = 0;
 	
+
+	@Override
+	public String toString() {
+		return "UserDTO [score=" + score + ", result=" + Arrays.toString(result) + ", nowStatus=" + nowStatus
+				+ ", ball=" + ball + ", pin=" + pin + ", frame=" + frame + ", nScore=" + nScore + ", lastBall="
+				+ lastBall + ", printTemp=" + printTemp + ", ballCnt=" + ballCnt + ", total=" + total + ", totalTemp="
+				+ totalTemp + ", playerNumber=" + playerNumber + "]";
+	}
 
 	public UserDTO(int playerNumber) {
 		this.playerNumber = playerNumber;
