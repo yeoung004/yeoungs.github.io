@@ -11,7 +11,6 @@ import org.junit.Test;
 public class BowlingStartTest {
 	BowlingStart start = new BowlingStart();
 	List<UserDTO> palyersDto = new ArrayList<UserDTO>();
-	testScore testResult = new testScore();
 	int testResults[];
 	int testPin[][][];
 	int players = 0;
@@ -41,7 +40,7 @@ public class BowlingStartTest {
 		for (int i = 0; i < players; i++) {
 			palyersDto.add(new UserDTO(i + 1));
 		}
-		assertArrayEquals(testResults, start.start(true, lastTestPin, testPin, palyersDto));
+		assertArrayEquals(testResults, start.start(0, lastTestPin, testPin, palyersDto));
 
 	}
 
@@ -69,7 +68,7 @@ public class BowlingStartTest {
 		for (int i = 0; i < players; i++) {
 			palyersDto.add(new UserDTO(i + 1));
 		}
-		assertArrayEquals(testResults, start.start(true, lastTestPin, testPin, palyersDto));
+		assertArrayEquals(testResults, start.start(0, lastTestPin, testPin, palyersDto));
 
 	}
 
@@ -95,12 +94,12 @@ public class BowlingStartTest {
 		for (int i = 0; i < players; i++) {
 			palyersDto.add(new UserDTO(i + 1));
 		}
-		assertArrayEquals(testResults, start.start(true, lastTestPin, testPin, palyersDto));
+		assertArrayEquals(testResults, start.start(0, lastTestPin, testPin, palyersDto));
 
 	}
 
 	@Test
-	public void randomScoreGame() throws Exception {
+	public void selfTestGame() throws Exception {
 		int limit = 10;
 		int temp;
 
@@ -122,13 +121,10 @@ public class BowlingStartTest {
 				limit = 10;
 			}
 			lastTestPin[player] = (int) (Math.random() * (limit + 1));
-			testResults[player] = testResult.getTestResult(testPin[player], lastTestPin[player]);
 		}
 
 		for (int i = 0; i < players; i++) {
 			palyersDto.add(new UserDTO(i + 1));
 		}
-		assertArrayEquals(testResults, start.start(true, lastTestPin, testPin, palyersDto));
-
 	}
 }
