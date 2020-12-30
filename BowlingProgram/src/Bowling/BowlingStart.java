@@ -1,33 +1,49 @@
 package Bowling;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
+import java.util.Scanner;
 
 public class BowlingStart {
 
 	BowlingRolling bowlingRolling;
 	BowlingScore bowlingScore;
-	BowlingScoreRecord bowlingScoreShow;
+	BowlingScoreRecord bowlingScoreRecord;
 
 	public BowlingStart() {
 		bowlingRolling = new BowlingRolling();
 		bowlingScore = new BowlingScore();
-		bowlingScoreShow = new BowlingScoreRecord();
+		bowlingScoreRecord = new BowlingScoreRecord();
 	}
 
 	// true: test모드, false: 일반모드
-	public int[] start(boolean mode, int[] lastTestPin, int[][][] testPins, List<UserDTO> palyersDto) {
+	public int[] start(boolean mode, int[] lastTestPin, int[][][] testPins, List<UserDTO> playersDto)
+			throws IOException {
 		int check = 0;
-
-		for (int frame = UserDTO.FIRST_FRAME; frame <= UserDTO.LAST_FRAME; frame++) {
-			for (UserDTO userDto : palyersDto) {
-				for (int ball = UserDTO.FIRST_BALL; ball <= UserDTO.SECOND_BALL; ball++) {
-					userDto.setFrame(frame);
-					userDto.setBall(ball);
+		int player = 0;
+		int frame = UserDTO.FIRST_FRAME;
+		int ball = UserDTO.FIRST_BALL;
+		File file = new File("backup.txt");
+		
+		if (!file.exists())
+			file.createNewFile();
+		
+		for (; frame <= UserDTO.LAST_FRAME; frame++) {
+			for (; player < playersDto.size(); player++) {
+				
+				bowlingScoreRecord.backup(playersDto, file);
+				for (; ball <= UserDTO.SECOND_BALL; ball++) {
+					playersDto.get(player).setFrame(frame);
+					playersDto.get(player).setBall(ball);
 
 					if (mode)
-						check = bowlingRolling.rolling(testPins[userDto.getPlayerNumber() - 1], mode, userDto);
+						check = bowlingRolling.rolling(testPins[playersDto.get(player).getPlayerNumber() - 1], mode,
+								playersDto.get(player));
 					else
-						check = bowlingRolling.rolling(null, mode, userDto);
+						check = bowlingRolling.rolling(null, mode, playersDto.get(player));
 
 					if (check == 0) {
 						return null;
@@ -36,25 +52,29 @@ public class BowlingStart {
 						continue;
 					}
 
-					bowlingScore.setScore(userDto);
-					bowlingScoreShow.setNowScore(userDto);
-					bowlingScoreShow.nowScore(userDto.getPrintTemp());
+					bowlingScore.setScore(playersDto.get(player));
+					bowlingScoreRecord.setNowScore(playersDto.get(player));
+					bowlingScoreRecord.nowScore(playersDto.get(player).getPrintTemp());
 
-					if (userDto.isLastBall() || bowlingRolling.fillBall(userDto)) {
+					if (playersDto.get(player).isLastBall() || bowlingRolling.fillBall(playersDto.get(player))) {
 						break;
-					} else if (userDto.isLastBall()) {
+					} else if (playersDto.get(player).isLastBall()) {
 						ball--;
 					}
 				}
+				ball = UserDTO.FIRST_BALL;
 			}
+			player = 0;
 		}
+
+		// 테스트용
 		if (mode) {
-			int result[] = new int[palyersDto.size()];
-			for (int i = 0; i < palyersDto.size(); i++) {
-				if ((palyersDto.get(i).getResult(9, 0) + palyersDto.get(i).getResult(9, 1)) >= 10)
-					result[i] = palyersDto.get(i).getTotal() + lastTestPin[i] - palyersDto.get(i).getResult(9, 1);
+			int result[] = new int[playersDto.size()];
+			for (int i = 0; i < playersDto.size(); i++) {
+				if ((playersDto.get(i).getResult(9, 0) + playersDto.get(i).getResult(9, 1)) >= 10)
+					result[i] = playersDto.get(i).getTotal() + lastTestPin[i] - playersDto.get(i).getResult(9, 1);
 				else
-					result[i] = palyersDto.get(i).getTotal();
+					result[i] = playersDto.get(i).getTotal();
 			}
 			return result;
 		}

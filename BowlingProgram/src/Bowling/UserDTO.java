@@ -11,7 +11,7 @@ public class UserDTO {
 	final static int FIRST_FRAME = 1;
 	final static int LAST_FRAME = 10;
 	final static int STRIKE_SPARE = 10;
-	 
+	
 	private String score = "";
 	private int[][] result = { { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 }, { 0, 0 },
 			{ 0, 0 } };
@@ -39,6 +39,24 @@ public class UserDTO {
 		nowStatus.put("Double", false);
 	}
 	
+	public UserDTO(String score, int[][] result, Map<String, Boolean> nowStatus, int ball, int pin, int frame,
+			int nScore, boolean lastBall, String printTemp, int ballCnt, int total, String totalTemp,
+			int playerNumber) {
+		this.score = score;
+		this.result = result;
+		this.nowStatus = nowStatus;
+		this.ball = ball;
+		this.pin = pin;
+		this.frame = frame;
+		this.nScore = nScore;
+		this.lastBall = lastBall;
+		this.printTemp = printTemp;
+		this.ballCnt = ballCnt;
+		this.total = total;
+		this.totalTemp = totalTemp;
+		this.playerNumber = playerNumber;
+	}
+
 	public int getPlayerNumber() {
 		return playerNumber;
 	}
