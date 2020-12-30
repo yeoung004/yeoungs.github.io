@@ -27,34 +27,36 @@ public class BowlingStart {
 		int frame = UserDTO.FIRST_FRAME;
 		int ball = UserDTO.FIRST_BALL;
 		Map<String, Integer> gameData = new HashMap<String, Integer>();
-		String[] loadGame = new String [3];
-		
+		String[] loadGame = new String[3];
+
 		File gameDatafile = new File("gameBackup.txt");
 		File playerDatafile = new File("playerBackup.txt");
-		
-		if(mode == 2){
+
+		if (mode == 2) {
 			BufferedReader reader = new BufferedReader(new FileReader(gameDatafile));
 			loadGame = reader.readLine().toString().split("/");
-			frame = Integer.parseInt(loadGame[0]); 
+			frame = Integer.parseInt(loadGame[0]);
 			ball = Integer.parseInt(loadGame[1]);
-			player = Integer.parseInt(loadGame[2])+1;
-			
-			if((playersDto.size()+1) < player)
-				player = 1;
-			
+			player = Integer.parseInt(loadGame[2]);
+
 		}
-		
-		
+
 		for (; frame <= UserDTO.LAST_FRAME; frame++) {
 			for (; player < playersDto.size(); player++) {
 				for (; ball <= UserDTO.SECOND_BALL; ball++) {
+					
+					gameData.put("frame", frame);
+					gameData.put("ball", ball);
+					gameData.put("player", player);
+					bowlingScoreRecord.backup(playersDto, gameData, gameDatafile, playerDatafile);
+					
 					playersDto.get(player).setFrame(frame);
 					playersDto.get(player).setBall(ball);
 
 					if (mode == 0)
 						check = bowlingRolling.rolling(testPins[playersDto.get(player).getPlayerNumber() - 1], true,
 								playersDto.get(player));
-					else if (mode == 1)
+					else
 						check = bowlingRolling.rolling(null, false, playersDto.get(player));
 
 					if (check == 0) {
@@ -69,20 +71,22 @@ public class BowlingStart {
 					bowlingScoreRecord.nowScore(playersDto.get(player).getPrintTemp());
 
 					if (playersDto.get(player).isLastBall() || bowlingRolling.fillBall(playersDto.get(player))) {
+						gameData.put("frame", frame);
+						gameData.put("ball", ball);
+						gameData.put("player", player);
+						bowlingScoreRecord.backup(playersDto, gameData, gameDatafile, playerDatafile);
+						
 						break;
 					} else if (playersDto.get(player).isLastBall()) {
 						ball--;
 					}
 				}
+
 				ball = UserDTO.FIRST_BALL;
-				gameData.put("frame", frame);
-				gameData.put("ball", ball);
-				gameData.put("player", player);
-				bowlingScoreRecord.backup(playersDto, gameData, gameDatafile, playerDatafile);
 			}
 			player = 0;
 		}
-		
+
 		bowlingScoreRecord.resetFiles(gameDatafile, playerDatafile);
 
 		// 테스트용
