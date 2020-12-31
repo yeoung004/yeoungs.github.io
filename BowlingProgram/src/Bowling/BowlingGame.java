@@ -25,9 +25,10 @@ public class BowlingGame {
 		Scanner input = new Scanner(System.in);
 		String readGame = "";
 		String dataTemp = "";
+		boolean isNewGame = true;
 		int mode = 1;
 
-		File file = new File("backup.txt");
+		File file = new File("playerBackup.txt");
 
 		System.out.println("-------------------프로그램을 시작합니다-------------------");
 
@@ -35,23 +36,21 @@ public class BowlingGame {
 			BufferedReader reader = new BufferedReader(new FileReader(file));
 			dataTemp = reader.readLine();
 			reader.close();
-
-			if (dataTemp != "") {
+			if (dataTemp != null && dataTemp != "") {
 				System.out.println("진행하던 게임이 있습니다. 계속해서 하시겠습니까?(y)");
 				readGame = input.next();
-				
+
 				if (readGame.equals("y") || readGame.equals("Y")) {
 					System.out.println("게임을 이어서 시작합니다...");
 					loadData(palyersDto, dataTemp);
 					mode = 2;
-				} else {
-					System.out.println("새 게임을 시작합니다...");
-					setPlayer(palyersDto);
-					mode = 1;
+					isNewGame = false;
 				}
 
 			}
-		} else {
+		}
+
+		if (isNewGame) {
 			System.out.println("새 게임을 시작합니다...");
 			setPlayer(palyersDto);
 			mode = 1;
