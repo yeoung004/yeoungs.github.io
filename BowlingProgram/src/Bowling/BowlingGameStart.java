@@ -8,13 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BowlingStart {
+public class BowlingGameStart {
 
 	BowlingRolling bowlingRolling;
 	BowlingScore bowlingScore;
 	BowlingScoreRecord bowlingScoreRecord;
 
-	public BowlingStart() {
+	public BowlingGameStart() {
 		bowlingRolling = new BowlingRolling();
 		bowlingScore = new BowlingScore();
 		bowlingScoreRecord = new BowlingScoreRecord();
@@ -38,7 +38,7 @@ public class BowlingStart {
 			frame = Integer.parseInt(loadGame[0]);
 			ball = Integer.parseInt(loadGame[1]);
 			player = Integer.parseInt(loadGame[2]);
-
+			reader.close();
 		}
 
 		for (; frame <= UserDTO.LAST_FRAME; frame++) {

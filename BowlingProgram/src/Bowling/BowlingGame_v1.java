@@ -169,7 +169,7 @@ public class BowlingGame_v1 {
 
 			}
 		}
-
+		roll.close();
 		show(result, score);
 		System.out.println("최종점수 :" + total);
 

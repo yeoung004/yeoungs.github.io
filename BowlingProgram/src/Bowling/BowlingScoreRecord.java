@@ -1,17 +1,46 @@
 package Bowling;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import org.json.simple.JSONObject;
 
 public class BowlingScoreRecord {
+
+	public String loadGame() throws IOException {
+		File file = new File("playerBackup.txt");
+		String dataTemp = "";
+		String readGame = "";
+		Scanner input = new Scanner(System.in);
+
+		if (file.exists()) {
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			dataTemp = reader.readLine();
+			reader.close();
+
+			if (dataTemp != null && dataTemp != "") {
+				System.out.println("진행하던 게임이 있습니다. 계속해서 하시겠습니까?(y)");
+				readGame = input.next();
+				if (!readGame.equals("y") || !readGame.equals("Y")) {
+					dataTemp = "";
+				}	
+			}else
+				dataTemp = "";
+			
+			
+
+		}
+		return dataTemp;
+	}
 
 	public void setNowScore(UserDTO userDto) {
 		userDto.setPrintTemp("출력 = " + userDto.getScore() + "[" + userDto.getFrame() + ", " + userDto.getBall() + ", ");
@@ -128,7 +157,9 @@ public class BowlingScoreRecord {
 		System.out.println(printTemp + "]");
 	}
 
-	public void backup(List<UserDTO> playersDto, Map<String, Integer> gameData, File gameDatafile, File playerDatafile) throws IOException {
+	@SuppressWarnings("unchecked")
+	public void backup(List<UserDTO> playersDto, Map<String, Integer> gameData, File gameDatafile, File playerDatafile)
+			throws IOException {
 		BufferedWriter writer;
 
 		JSONObject data;
@@ -186,16 +217,17 @@ public class BowlingScoreRecord {
 		writer.close();
 
 	}
-	public void resetFiles(File gameDatafile, File playerDatafile) throws IOException{
+
+	public void resetFiles(File gameDatafile, File playerDatafile) throws IOException {
 		BufferedWriter writer;
-		
+
 		writer = new BufferedWriter(new FileWriter(gameDatafile));
 		writer.write("");
 		writer.close();
-		
+
 		writer = new BufferedWriter(new FileWriter(playerDatafile));
 		writer.write("");
 		writer.close();
-		
+
 	}
 }

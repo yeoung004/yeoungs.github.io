@@ -9,7 +9,7 @@ import java.util.Scanner;
 import org.junit.Test;
 
 public class BowlingStartTest {
-	BowlingStart start = new BowlingStart();
+	BowlingGameStart start = new BowlingGameStart();
 	List<UserDTO> palyersDto = new ArrayList<UserDTO>();
 	int testResults[];
 	int testPin[][][];
