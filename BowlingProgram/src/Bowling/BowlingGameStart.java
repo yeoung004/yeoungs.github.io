@@ -44,12 +44,12 @@ public class BowlingGameStart {
 		for (; frame <= UserDTO.LAST_FRAME; frame++) {
 			for (; player < playersDto.size(); player++) {
 				for (; ball <= UserDTO.SECOND_BALL; ball++) {
-					
+
 					gameData.put("frame", frame);
 					gameData.put("ball", ball);
 					gameData.put("player", player);
 					bowlingScoreRecord.backup(playersDto, gameData, gameDatafile, playerDatafile);
-					
+
 					playersDto.get(player).setFrame(frame);
 					playersDto.get(player).setBall(ball);
 
