@@ -166,7 +166,7 @@
         	 	alert(retVal.message);
 	         },
 	         error: function(request,staus,error){
-	        	 alert("실패"+request+'/'+staus+'/'+error);
+	        	 //alert("실패"+request+'/'+staus+'/'+error);
 	         }
 	     });
 	}
