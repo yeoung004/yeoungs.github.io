@@ -10,7 +10,7 @@
 </head>
 <body>
 	<div id="wrap">
-		<a href="/index/?#"><button class="btn btn-success">시작하기</button></a>
+		<a href="/index"><button class="btn btn-success">로그인</button></a>
 	</div>
 </body>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>

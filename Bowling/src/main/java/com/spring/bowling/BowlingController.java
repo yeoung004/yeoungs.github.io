@@ -1,12 +1,17 @@
 package com.spring.bowling;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class BowlingController {
@@ -29,10 +34,20 @@ public class BowlingController {
 		return "index";
 	}
 	
-	@RequestMapping(value = "/score", method = RequestMethod.GET)
-	public String score(Model model) {
-		logger.info("Calculator score");
+	@RequestMapping(value = "/score", method = { RequestMethod.POST, RequestMethod.GET })
+	
+	public @ResponseBody Map<String,Object> score(
+			@RequestParam(value="allScore[]") List<String> allScore
+			){
+		logger.info(allScore.toString());
+		for (int i = 0; i < allScore.size(); i++) {
+			//System.out.println(allScore.get(i));
+		}
 		
-		return "score";
+		Map<String,Object> retVal = new HashMap<String, Object>();
+		retVal.put("code", "Ok");
+		retVal.put("message", "등록에 성공하였습니다.");
+		
+		return retVal;
 	}
 }

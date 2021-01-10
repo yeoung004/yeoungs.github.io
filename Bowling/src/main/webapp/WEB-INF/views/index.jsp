@@ -143,16 +143,32 @@
 	}
 	
 	function bowlingScore(score){
+		var allScore = [];
+		var temp = 0;
+		for (var i = 0; i < 21; i++) {
+			temp = document.getElementById("scoreBoard"+(i+1)).innerHTML;
+			if(temp == '')
+				allScore[i] = 0;
+			else
+				allScore[i] = temp; 
+		}
+		var result = {
+			"allScore" : allScore	
+		};
+		
 		 $.ajax({
 	         url:'/score',
-	         data:{ "socre" : score},
-	         methoed:"get",
-	         dataType: "text",
-			 
-	         success: function(data){
-	        	 
+	         type: 'POST',
+	         dataType:'JSON',
+	         data: result,
+	         
+	         success: function(retVal){
+        	 	alert(retVal.message);
+	         },
+	         error: function(request,staus,error){
+	        	 alert("실패"+request+'/'+staus+'/'+error);
 	         }
-	     })
+	     });
 	}
 </script>
 <script type="text/javascript" src="/resources/js/bootstrap.js"></script>
