@@ -1,13 +1,9 @@
 package Bowling;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -20,41 +16,23 @@ import org.json.simple.parser.ParseException;
 public class BowlingGame {
 	public static void main(String[] args) throws IOException, ParseException {
 		List<UserDTO> palyersDto = new ArrayList<UserDTO>();
-		BowlingStart start = new BowlingStart();
+		BowlingGameStart start = new BowlingGameStart();
 		BowlingScoreRecord bowlingScoreRecord = new BowlingScoreRecord();
-		Scanner input = new Scanner(System.in);
-		String readGame = "";
 		String dataTemp = "";
 		int mode = 1;
 
-		File file = new File("playerBackup.txt");
-
 		System.out.println("-------------------프로그램을 시작합니다-------------------");
 
-		if (file.exists()) {
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			dataTemp = reader.readLine();
-			reader.close();
+		dataTemp = bowlingScoreRecord.loadGame();
 
-			if (dataTemp != "") {
-				System.out.println("진행하던 게임이 있습니다. 계속해서 하시겠습니까?(y)");
-				readGame = input.next();
-				
-				if (readGame.equals("y") || readGame.equals("Y")) {
-					System.out.println("게임을 이어서 시작합니다...");
-					loadData(palyersDto, dataTemp);
-					mode = 2;
-				} else {
-					System.out.println("새 게임을 시작합니다...");
-					setPlayer(palyersDto);
-					mode = 1;
-				}
-
-			}
-		} else {
+		if (dataTemp.equals("")) {
 			System.out.println("새 게임을 시작합니다...");
 			setPlayer(palyersDto);
 			mode = 1;
+		} else {
+			System.out.println("게임을 이어서 시작합니다...");
+			loadData(palyersDto, dataTemp);
+			mode = 2;
 		}
 
 		start.start(mode, null, null, palyersDto);
@@ -73,8 +51,8 @@ public class BowlingGame {
 		JSONParser paser = new JSONParser();
 		JSONObject players = (JSONObject) paser.parse(dataTemp);
 		int[][] result = new int[10][2];
-		Set key = players.keySet();
-		Iterator iter = key.iterator();
+		Set<?> key = players.keySet();
+		Iterator<?> iter = key.iterator();
 
 		while (iter.hasNext()) {
 			JSONObject player = (JSONObject) players.get(iter.next().toString());
@@ -87,7 +65,7 @@ public class BowlingGame {
 				result[i][1] = Integer.parseInt(resultTmp.get(1).toString());
 			}
 
-			palyersDto.add(new UserDTO(player.get("nScore").toString(), result, nowStatus,
+			palyersDto.add(new UserDTO(player.get("nScore").toString(), result,nowStatus,
 					Integer.parseInt(player.get("ball").toString()), Integer.parseInt(player.get("pin").toString()),
 					Integer.parseInt(player.get("frame").toString()), Integer.parseInt(player.get("nScore").toString()),
 					(boolean) player.get("lastBall"), player.get("printTemp").toString(),

@@ -9,7 +9,7 @@ import java.util.Scanner;
 import org.junit.Test;
 
 public class BowlingStartTest {
-	BowlingStart start = new BowlingStart();
+	BowlingGameStart start = new BowlingGameStart();
 	List<UserDTO> palyersDto = new ArrayList<UserDTO>();
 	int testResults[];
 	int testPin[][][];
@@ -108,6 +108,7 @@ public class BowlingStartTest {
 		testResults = new int[players];
 		lastTestPin = new int[players];
 		testPin = new int[players][10][2];
+		int [] playersScore;
 
 		for (int player = 0; player < players; player++) {
 			for (int i = 0; i < testPin[player].length; i++) {
@@ -125,6 +126,12 @@ public class BowlingStartTest {
 
 		for (int i = 0; i < players; i++) {
 			palyersDto.add(new UserDTO(i + 1));
+		}
+		playersScore = new int [players];
+		playersScore = start.start(0, lastTestPin, testPin, palyersDto);
+		
+		for (int i = 0; i < playersScore.length; i++) {
+			System.out.println((i+1) + "번 선수 : " + playersScore[i] + "점");
 		}
 	}
 }
